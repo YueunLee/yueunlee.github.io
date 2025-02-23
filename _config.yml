@@ -13,8 +13,6 @@
 
 
 
-theme: jekyll-text-theme
-
 ## => Site Settings
 ##############################
 text_skin: ocean # "default" (default), "dark", "forest", "ocean", "chocolate", "orange"
