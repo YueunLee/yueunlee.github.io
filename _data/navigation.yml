@@ -49,7 +49,7 @@ header:
       fr-LU   : *FR
       tr      : &TR       Araştırma
       # @end locale config
-    url: /research.html
+    url: /research.md
 
   - titles:
       # @start locale config
@@ -75,4 +75,4 @@ header:
       fr-LU   : *FR
       tr      : &TR       Notlar
       # @end locale config
-    url: /notes.html
+    url: /notes.md
