@@ -2,15 +2,13 @@
 layout: page
 ---
 
-## Publications
-
-### Published
+## Published
 1. Geonho Hwang, Yesom Park, Yueun Lee, and Myungjoo Kang.  
    **"Analysis of efficient preconditioner for solving Poisson equation with Dirichlet boundary condition in irregular three-dimensional domains"**.  
    *Journal of Computational Physics* 519 (2024), p. 113418.  
    [DOI:10.1016/j.jcp.2024.113418](https://doi.org/10.1016/j.jcp.2024.113418)
 
-### Submitted
+## Submitted
 2. Hyunjong Lee, Yueun Lee, Masaaki Imaizumi, and Joong-Ho Won.  
    **"Minimax Optimal Estimation of Distributions with Wasserstein Autoencoders using Exact Penalties"**.  
    Submitted. 2024.
