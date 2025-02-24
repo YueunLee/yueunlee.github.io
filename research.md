@@ -2,8 +2,8 @@
 layout: article
 ---
 
-# Publications
-## Published
+<!-- # Publications
+## Published -->
 1. Geonho Hwang, Yesom Park, Yueun Lee, and Myungjoo Kang.  
    **"Analysis of efficient preconditioner for solving Poisson equation with Dirichlet boundary condition in irregular three-dimensional domains"**.  
    *Journal of Computational Physics* 519 (2024), p. 113418.  
