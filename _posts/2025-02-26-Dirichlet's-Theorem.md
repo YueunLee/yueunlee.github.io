@@ -104,6 +104,14 @@ which converges uniformly on any compact subset of $\Re(s)>0$, since it is conta
 
 <div style="text-align: right"> $\square$ </div>
 
+Similar application of Abel's summation lemma shows that $L(s,\chi)$ converges for real positive $s$ and $\chi\not =\chi_0$. From the previous theorem, we conclude that $L(s,\chi)$ is holomorphic for $\Re(s)>0$. As a result, $L(1,\chi)$ is finite for $\chi\not =\chi_0$. 
+
+On the other hand, for $\chi_0$, we have 
+
+$$
+L(s,\chi_0)=\prod_{p\centernot\mid m}\zeta(s)\prod_{p|m}
+$$
+
 ### Theorem.
 Suppose that all $a_n$ are non-negative real numbers. If $D(s)$ converges for $\Re(s)>s_0$ for some real $s_0$
 
