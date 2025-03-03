@@ -78,11 +78,11 @@ $$
 D(s)=\sum_{n}{\frac{a_n}{n^s}}.
 $$
 
-### Theorem. 
-If $D(s)$ converges for some $s=s_0$, then it converges uniformly on each compact subset of $\Re(s)>\Re(s_0)$. Hence, $D$ is holomorphic in this half-plane.
+### Theorem 
+If $D(s)$ converges at some point $s=s_0$, it converges uniformly on each compact subset of $\Re(s)>\Re(s_0)$. Hence, $D$ is holomorphic in this half-plane.
 
-### Proof.
-Without loss of generality, assume $s_0=0$. Define $S_n=a_1+\cdots+a_n$. Then, by the condition, there exists a constant $C$ such that $\lvert S_n \rvert\le C$. For $\Re(s)>0$, since $\frac{S_n}{n^s}\rightarrow0$ as $n\rightarrow\infty$, applying Abel's summation lemma yields
+### Proof
+Assume, without loss of generality, that $s_0=0$. Let $S_n=a_1+\cdots+a_n$. By assumption, there exists a constant $C$ such that $\lvert S_n \rvert\le C$. For $\Re(s)>0$, since $\frac{S_n}{n^s}\rightarrow0$ as $n\rightarrow\infty$, applying Abel's summation lemma yields
 
 $$
 \Big\lvert \sum_{n}{\frac{a_n}{n^s}}\Big\rvert=\Big\lvert\sum_{n}{S_n(\frac{1}{n^s}-\frac{1}{(n+1)^s})}\Big\rvert\le C\sum_{n}{\Big\lvert\frac{1}{n^s}-\frac{1}{(n+1)^s}\Big\rvert}.
@@ -104,14 +104,38 @@ which converges uniformly on any compact subset of $\Re(s)>0$, since it is conta
 
 <div style="text-align: right"> $\square$ </div>
 
-Similar application of Abel's summation lemma shows that $L(s,\chi)$ converges for real positive $s$ and $\chi\not =\chi_0$. From the previous theorem, we conclude that $L(s,\chi)$ is holomorphic for $\Re(s)>0$. As a result, $L(1,\chi)$ is finite for $\chi\not =\chi_0$. 
+An analogous application of Abel's summation lemma shows that $L(s,\chi)$ converges for real positive $s$ and $\chi\not =\chi_0$. From the previous theorem, we conclude that $L(s,\chi)$ is holomorphic for $\Re(s)>0$, implying that $L(1,\chi)$ is finite for $\chi\not =\chi_0$. 
 
-On the other hand, for $\chi_0$, we have 
+For $\Re(s)>1$, we also have 
 
 $$
-L(s,\chi_0)=\prod_{p\centernot\mid m}\zeta(s)\prod_{p|m}
+L(s,\chi_0)=\prod_{p\nmid m}{\frac{1}{1-p^{-s}}}=\zeta(s)\prod_{p\mid m}{(1-p^{-s})}.
 $$
 
-### Theorem.
-Suppose that all $a_n$ are non-negative real numbers. If $D(s)$ converges for $\Re(s)>s_0$ for some real $s_0$
+Additionally,
+
+$$
+\zeta(s)=\frac{1}{s-1}+\sum_{n}{\frac{1}{n^s}}-\int_{1}^{\infty}{\frac{1}{t^s}dt}=\frac{1}{s-1}+\sum_{n}{\Big(\frac{1}{n^s}-\int_{n}^{n+1}{\frac{1}{t^s}dt}\Big)}=\frac{1}{s-1}+\sum_{n}{\int_{n}^{n+1}{\Big(\frac{1}{n^s}-\frac{1}{t^s}\Big)dt}}.
+$$
+
+We note that
+
+$$
+\Big\lvert\int_{n}^{n+1}{\Big(\frac{1}{n^s}-\frac{1}{t^s}\Big)dt}\Big\rvert\le\sup_{n\le x\le n+1}\Big\lvert\frac{1}{n^s}-\frac{1}{t^s}\Big\rvert=\Big\lvert\frac{1}{n^s}-\frac{1}{(n+1)^s}\Big\rvert\le\frac{\lvert s\rvert}{n^{\Re(s)+1}},
+$$
+
+so the series of integrals converges for $\Re(s)>0$. Since each integral is holomorphic for $\Re(s)>0$, the series is holomorphic in this region. Therefore, $\zeta(s)$ extends to a meromorphic function with a single simple pole at $s=1$ for $\Re(s)>0$, and $L(s,\chi_0)$ extends similarly. In other words, $L(s,\chi_0)$ is holomorphic for $\Re(s)>0$, except for a simple pole at $s=1$.
+
+### Theorem
+Suppose that all $a_n$ are non-negative real numbers. If the series defining $D(s)$ converges for $\Re(s)>s_0$ for some real $s_0$, and $D(s)$ extends to a holomorphic function in $\Re(s)>s_0-\varepsilon$ for some $\varepsilon>0$, then the series converges for $\Re(s)>s_0-\varepsilon$.
+
+### Proof
+TODO $\square$
+
+This theorem is essential for the final step of the proof, which will be presented in the next section.
+
+## 4. Showing $L(s,\chi)\not = 0$ for $\chi\not =\chi_0$
+
+TODO
+
 
