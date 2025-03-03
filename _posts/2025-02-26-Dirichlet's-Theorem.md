@@ -2,6 +2,8 @@
 title: Fourier Analysis on Finite Abelian Groups
 ---
 
+## 1. Fourier Analysis on Finite Abelian Groups
+
 In Fourier analysis on $\mathbb{C}$, complex-valued functions can be approximated as sums of exponentials. A similar approach applies to finite abelian groups. Let $V$ be the vector space of all complex-valued functions defined on a finite abelian group $G$. When $G = \mathbb{Z}_N = \mathbb{Z}/N\mathbb{Z}$, the set $\\{ f_n \mid f_n(k) = w^{nk}, \, n \in \mathbb{Z}_N \\}$ forms an orthonormal basis of $V$, where $w = e^{2\pi i / N}$. Moreover, this basis is isomorphic to $\mathbb{Z}_N$, as the mapping between $n$ and $f_n$ defines an isomorphism.
 
 To extend this framework to general finite abelian groups, we first construct an orthonormal basis of $V$. A character is defined as a homomorphism from $V$ to $\mathbb{C}^\*$. For $\mathbb{Z}_N$, the characters are precisely the functions $f_n$ described earlier. These characters form a group under function composition, known as the dual group of $G$, denoted by $\hat{G}$. A straightforward verification shows that $\hat{G}$ is an orthonormal subset of $V$.  
@@ -13,6 +15,8 @@ This guarantees that any function on $G$ can be expressed as
 $$
 f = \sum_{\chi \in \hat{G}} \hat{f}(\chi) \chi, \quad \hat{f}(\chi) = (f, \chi) = \frac{1}{\lvert G \rvert} \sum_{a \in G} f(a) \overline{\chi(a)}.
 $$  
+
+## 2. Dirichlet's theorem
 
 At this stage, we are ready to prove Dirichlet's theorem, which states that there are infinitely many primes satisfying $p\equiv a(\mathrm{mod}\ m)$ when $a$ and $m$ are coprime. Let $V = \mathbb{Z}_m^\*$ and extend characters on $\mathbb{Z}_m^\*$ to $\mathbb{Z}_m$ by setting them to zero outside the original domain. Noting that
 
