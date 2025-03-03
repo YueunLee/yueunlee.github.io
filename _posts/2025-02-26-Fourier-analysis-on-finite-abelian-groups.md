@@ -45,7 +45,10 @@ $$
 L(s,\chi)=\sum_{n}{\frac{\chi(n)}{n^s}}.
 $$
 
+The properties of $L(s,\chi)$, especially for $\Re(s)>0$, are the center of the proof. Before introducing that, we should study for useful theorems on the Dirichlet series, which defined as
 
-
+$$
+D(s)=\sum_{n}{\frac{a_n}{n^s}}.
+$$
 
 
