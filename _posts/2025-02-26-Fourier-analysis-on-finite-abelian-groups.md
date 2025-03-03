@@ -36,7 +36,7 @@ $$
 then the right-hand side also diverges, implying
 
 $$
-\sum_{p\equiv a(\mathrm{mod}\ m)}\frac{1}{p}=\infin,
+\sum_{p\equiv a(\mathrm{mod}\ m)}\frac{1}{p}=\infty ,
 $$
 
 which confirms the infinitude of primes satisfying $p\equiv a(\mathrm{mod}\ m)$. Thus, it remains to prove this finiteness on the non-principal characters, which leads us to define L-function as follows:
