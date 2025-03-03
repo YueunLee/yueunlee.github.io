@@ -1,5 +1,6 @@
 ---
 title: Dirichlet's theorem
+mathjax: true
 ---
 
 ## 1. Fourier Analysis on Finite Abelian Groups
@@ -59,4 +60,11 @@ $$
 D(s)=\sum_{n}{\frac{a_n}{n^s}}.
 $$
 
-TODO
+### Theorem. 
+If $D(s)$ converges for some $s=s_0$, then it converges uniformly to an analytic function on each compact subset of $\Re(s)>\Re(s_0)$.
+
+### Proof.
+(proof)
+
+### Theorem.
+
