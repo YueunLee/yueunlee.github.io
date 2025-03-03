@@ -1,5 +1,6 @@
 ---
 title: Dirichlet's theorem
+mathjax: true
 ---
 
 ## 1. Fourier Analysis on Finite Abelian Groups
