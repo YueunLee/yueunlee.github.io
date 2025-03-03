@@ -45,7 +45,7 @@ $$
 L(s,\chi)=\sum_{n}{\frac{\chi(n)}{n^s}}.
 $$
 
-TODO
+
 
 
 
