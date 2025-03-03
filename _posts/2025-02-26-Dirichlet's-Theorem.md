@@ -19,7 +19,7 @@ $$
 
 ## 2. Dirichlet's theorem
 
-We now proceed to the proof of Dirichlet's theorem, which states that there are infinitely many primes satisfying $p\equiv a(\mathrm{mod}\ m)$ when $a$ and $m$ are coprime. Let $V = \mathbb{Z}_m^*$ and extend characters on $\mathbb{Z}_m^*$ to $\mathbb{Z}_m$ by setting them to zero outside the original domain. Noting that
+We now proceed to the proof of Dirichlet's theorem, which states that there are infinitely many primes satisfying $p\equiv a(\mathrm{mod}\ m)$ when $a$ and $m$ are coprime. Let $V = \mathbb{Z}_m^\*$ and extend characters on $\mathbb{Z}_m^\*$ to $\mathbb{Z}_m$ by setting them to zero outside the original domain. Noting that
 
 $$
 \delta_a(n)=\sum_{\chi}\hat{\delta}_a(\chi)\chi(n)=\sum_{\chi}\chi(n)\cdot\frac{1}{\varphi(m)}\sum_{l\in\mathbb{Z}_m^*}\delta_a(l)\overline{\chi(l)}=\frac{1}{\varphi(m)}\sum_{\chi}{\chi(n)\overline{\chi(a)}},
