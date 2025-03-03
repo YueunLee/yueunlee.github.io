@@ -79,7 +79,7 @@ D(s)=\sum_{n}{\frac{a_n}{n^s}}.
 $$
 
 ### Theorem. 
-If $D(s)$ converges for some $s=s_0$, then it converges uniformly to an analytic function on each compact subset of $\Re(s)>\Re(s_0)$.
+If $D(s)$ converges for some $s=s_0$, then it converges uniformly on each compact subset of $\Re(s)>\Re(s_0)$. Hence, $D$ is holomorphic in this half-plane.
 
 ### Proof.
 Without loss of generality, assume $s_0=0$. Define $S_n=a_1+\cdots+a_n$. Then, by the condition, there exists a constant $C$ such that $\lvert S_n \rvert\le C$. For $\Re(s)>0$, since $\frac{S_n}{n^s}\rightarrow0$ as $n\rightarrow\infty$, applying Abel's summation lemma yields
@@ -100,7 +100,9 @@ $$
 \lvert D(s)\rvert \le C\lvert s\rvert\sum_{n}\frac{1}{n^{\Re(s)+1}},
 $$
 
-which converges uniformly on any compact subset of $\Re(s)>0$, since it is contained within some region $\Re(s)>\varepsilon>0$. <div style="text-align: right;">$\square$</div>
+which converges uniformly on any compact subset of $\Re(s)>0$, since it is contained within some region $\Re(s)>\varepsilon>0$.
+
+<div style="text-align: right"> $\square$ </div>
 
 ### Theorem.
 Suppose that all $a_n$ are non-negative real numbers. If $D(s)$ converges for $\Re(s)>s_0$ for some real $s_0$
