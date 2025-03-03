@@ -82,7 +82,25 @@ $$
 If $D(s)$ converges for some $s=s_0$, then it converges uniformly to an analytic function on each compact subset of $\Re(s)>\Re(s_0)$.
 
 ### Proof.
-(proof)
+Without loss of generality, assume $s_0=0$. Define $S_n=a_1+\cdots+a_n$. Then, by the condition, there exists a constant $C$ such that $\lvert S_n \rvert\le C$. For $\Re(s)>0$, since $\frac{S_n}{n^s}\rightarrow0$ as $n\rightarrow\infty$, applying Abel's summation lemma yields
+
+$$
+\Big\lvert \sum_{n}{\frac{a_n}{n^s}}\Big\rvert=\Big\lvert\sum_{n}{S_n(\frac{1}{n^s}-\frac{1}{(n+1)^s})}\Big\rvert\le C\sum_{n}{\Big\lvert\frac{1}{n^s}-\frac{1}{(n+1)^s}\Big\rvert}.
+$$
+
+Furthermore,
+
+$$
+\Big\lvert\frac{1}{n^s}-\frac{1}{(n+1)^s}\Big\rvert\le\sup_{n\le x\le n+1}{\Big\lvert\frac{s}{x^{s+1}}\Big\rvert}\le\frac{\lvert s\rvert}{n^{\Re(s)+1}}.
+$$
+
+Thus,
+
+$$
+\lvert D(s)\rvert \le C\lvert s\rvert\sum_{n}\frac{1}{n^{\Re(s)+1}},
+$$
+
+which converges uniformly on any compact subset of $\Re(s)>0$, since it is contained within some region $\Re(s)>\varepsilon>0$. <div style="text-align: right;">$\square$</div>
 
 ### Theorem.
 Suppose that all $a_n$ are non-negative real numbers. If $D(s)$ converges for $\Re(s)>s_0$ for some real $s_0$
