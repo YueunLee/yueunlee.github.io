@@ -19,7 +19,7 @@ $$
 
 ## 2. Dirichlet's theorem
 
-At this stage, we are ready to prove Dirichlet's theorem, which states that there are infinitely many primes satisfying $p\equiv a(\mathrm{mod}\ m)$ when $a$ and $m$ are coprime. Let $V = \mathbb{Z}_m^*$ and extend characters on $\mathbb{Z}_m^*$ to $\mathbb{Z}_m$ by setting them to zero outside the original domain. Noting that
+We now proceed to the proof of Dirichlet's theorem, which states that there are infinitely many primes satisfying $p\equiv a(\mathrm{mod}\ m)$ when $a$ and $m$ are coprime. Let $V = \mathbb{Z}_m^*$ and extend characters on $\mathbb{Z}_m^*$ to $\mathbb{Z}_m$ by setting them to zero outside the original domain. Noting that
 
 $$
 \delta_a(n)=\sum_{\chi}\hat{\delta}_a(\chi)\chi(n)=\sum_{\chi}\chi(n)\cdot\frac{1}{\varphi(m)}\sum_{l\in\mathbb{Z}_m^*}\delta_a(l)\overline{\chi(l)}=\frac{1}{\varphi(m)}\sum_{\chi}{\chi(n)\overline{\chi(a)}},
@@ -32,7 +32,7 @@ $$
 = \frac{1}{\varphi(m)}{(\sum_{p}{\frac{\chi_0(p)}{p^s}}+\sum_{\chi\not ={\chi_0}}{\overline{\chi(a)}}\sum_{p}{\frac{\chi(p)}{p^s}})},
 $$
 
-where $\chi_0$ is the principal character that takes the value 1 on all elements of $\mathbb{Z}_m^*$ and 0 elsewhere. Since these series converge uniformly for $s>1$, they are continuous in this region. Taking the limit as $s\rightarrow1^+$, the first term on the right-hand side diverges to infinity. If we can establish that
+where $\chi_0$ is the principal character, taking the value 1 on all elements of $\mathbb{Z}_m^*$ and 0 elsewhere. Since these series converge uniformly for $s>1$, they are continuous in this region. Taking the limit as $s\rightarrow1^+$, the first term on the right-hand side diverges to infinity. If we establish that
 
 $$
 \sum_{p}{\frac{\chi(p)}{p}} \text{ is finite for }\chi\not =\chi_0,
@@ -44,17 +44,35 @@ $$
 \sum_{p\equiv a(\mathrm{mod}\ m)}\frac{1}{p}=\infty,
 $$
 
-which confirms the infinitude of primes satisfying $p\equiv a(\mathrm{mod}\ m)$. Thus, it remains to prove this finiteness on the non-principal characters, which leads us to define L-function as follows:
+which confirms the infinitude of primes satisfying $p\equiv a(\mathrm{mod}\ m)$. Thus, it remains to prove this finiteness on the non-principal characters, leading to the definition of the Dirichlet L-function:
 
 $$
 L(s,\chi)=\sum_{n}{\frac{\chi(n)}{n^s}}.
 $$
 
-The properties of $L(s,\chi)$, especially for $\Re(s)>0$, are the center of the proof. 
+Observing that
+
+$$
+\lvert\sum_{n}{\frac{\chi(n)}{n^s}}-\prod_{p\le N}{\frac{1}{1-\frac{\chi(p)}{p^s}}}\rvert\le\sum_{n>N}\lvert\frac{\chi(n)}{n^s}\rvert,
+$$
+
+taking the limit as $N\rightarrow\infty$, we obtain 
+
+$$
+L(s,\chi)=\prod_{p}{\frac{1}{1-\frac{\chi(p)}{p^s}}}.
+$$
+
+for $\Re(s)>1$, because $L$ absolutely converges in this range. Moreover, for sufficiently large $p$, we can assume that $1-\frac{\chi(p)}{p^s}$ lies in $\mathbb{C}\setminus(-\infty,0]$, the principal branch of complex logarithms, allowing us to write
+
+$$
+L(s,\chi)=\exp\Big({\sum_{p}{-\log\big(1-\frac{\chi(p)}{p^s}\big)}}\Big)=\exp\Big({\sum_{p}{\frac{\chi(p)}{p^s}+O(\frac{\chi(p^2)}{p^{2s}})}}\Big)=\exp\Big({\sum_{p}{\frac{\chi(p)}{p^s}+O(1)}}\Big).
+$$
+
+Thus, it's enough to show that $L(1,\chi)$ is nonzero and finite for all $\chi\not =\chi_0$. Before addressing this, we explore some useful properties of $L(s,\chi)$, particularly for $\Re(s)>0$, in connection with Dirichlet series.
 
 ## 3. Dirichlet series
 
-Before introducing that, we should study for useful theorems on the Dirichlet series, which defined as
+A Dirichlet series is defined as
 
 $$
 D(s)=\sum_{n}{\frac{a_n}{n^s}}.
