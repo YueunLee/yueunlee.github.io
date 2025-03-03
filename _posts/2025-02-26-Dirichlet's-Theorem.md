@@ -67,4 +67,5 @@ If $D(s)$ converges for some $s=s_0$, then it converges uniformly to an analytic
 (proof)
 
 ### Theorem.
+Suppose that all $a_n$ are non-negative real numbers. If $D(s)$ converges for $\Re(s)>s_0$ for some real $s_0$
 
