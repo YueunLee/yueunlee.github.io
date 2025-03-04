@@ -79,7 +79,7 @@ D(s)=\sum_{n}{\frac{a_n}{n^s}}.
 $$
 
 ### Theorem 1
-If $D(s)$ converges at some point $s=s_0$, it converges uniformly on each compact subset of $\Re(s)>\Re(s_0)$. Hence, $D$ is holomorphic in this half-plane.
+If the series defining $D(s)$ converges at some point $s=s_0$, it converges uniformly on each compact subset of $\Re(s)>\Re(s_0)$. Hence, $D$ is holomorphic in this half-plane.
 
 ### Proof
 Assume, without loss of generality, that $s_0=0$. Let $S_n=a_1+\cdots+a_n$. By assumption, there exists a constant $C$ such that $\lvert S_n \rvert\le C$. For $\Re(s)>0$, since $\frac{S_n}{n^s}\rightarrow0$ as $n\rightarrow\infty$, applying Abel's summation lemma yields
@@ -130,7 +130,27 @@ so the series of integrals converges for $\Re(s)>0$. Since each integral is holo
 Suppose that all $a_n$ are non-negative real numbers. If the series defining $D(s)$ converges for $\Re(s)>s_0$ for some real $s_0$, and $D(s)$ extends to a holomorphic function in $\Re(s)>s_0-\varepsilon$ for some $\varepsilon>0$, then the series converges for $\Re(s)>s_0-\varepsilon$.
 
 ### Proof
-TODO $\square$
+Assume, without loss of generality, that $s_0=0$. By the theorem 1, it suffices to show that the series converges for all real $s>-\varepsilon$. Since $D$ is holomorphic in $\Re(s)>-\varepsilon$, we can write $D$ as
+
+$$
+D(s)=\sum_{m}{\frac{D^{(m)}(1)}{m!}(s-1)^m},
+$$
+
+with the $m$-th derivative 
+
+$$
+D^{(m)}(s)=\sum_{n}{\frac{a_n(-\log{n})^m}{n^s}}.
+$$
+
+We supposed that $a_n\ge 0$, so $(-1)^mD^{(m)}(1)$ is a convergent series with positive terms. Thus, we can rewrite $D$ as
+
+$$
+D(s)=\sum_{n}{\frac{a_n}{n}\sum_{m}{\frac{((1-s)\log{n})^m}{m!}}}=\sum_{n}{\frac{a_n}{n}e^{(1-s)\log{n}}}=\sum_{n}{\frac{a_n}{n^s}},
+$$
+
+implying that this series also converges at $s>-\varepsilon$. 
+
+<div style="text-align: right"> $\square$ </div>
 
 This theorem is essential for the final step of the proof, which will be presented in the next section.
 
@@ -166,3 +186,5 @@ $$
 $$
 
 and this series diverges to infinity when $s=\frac{1}{\phi(m)}>0$, a contradiction. Therefore, there are no $\chi\not =\chi_0$ that satisfies $L(s,\chi) = 0$, and this completes the proof of the Dirichlet's theorem.
+
+***
