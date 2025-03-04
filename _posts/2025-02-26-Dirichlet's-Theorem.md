@@ -78,7 +78,7 @@ $$
 D(s)=\sum_{n}{\frac{a_n}{n^s}}.
 $$
 
-### Theorem 
+### Theorem 1
 If $D(s)$ converges at some point $s=s_0$, it converges uniformly on each compact subset of $\Re(s)>\Re(s_0)$. Hence, $D$ is holomorphic in this half-plane.
 
 ### Proof
@@ -126,7 +126,7 @@ $$
 
 so the series of integrals converges for $\Re(s)>0$. Since each integral is holomorphic for $\Re(s)>0$, the series is holomorphic in this region. Therefore, $\zeta(s)$ extends to a meromorphic function with a single simple pole at $s=1$ for $\Re(s)>0$, and $L(s,\chi_0)$ extends similarly. In other words, $L(s,\chi_0)$ is holomorphic for $\Re(s)>0$, except for a simple pole at $s=1$.
 
-### Theorem
+### Theorem 2
 Suppose that all $a_n$ are non-negative real numbers. If the series defining $D(s)$ converges for $\Re(s)>s_0$ for some real $s_0$, and $D(s)$ extends to a holomorphic function in $\Re(s)>s_0-\varepsilon$ for some $\varepsilon>0$, then the series converges for $\Re(s)>s_0-\varepsilon$.
 
 ### Proof
@@ -136,6 +136,33 @@ This theorem is essential for the final step of the proof, which will be present
 
 ## 4. Showing $L(s,\chi)\not = 0$ for $\chi\not =\chi_0$
 
-TODO
+Define $f$ by
+$$
+f(s)=\prod_{\chi}{L(s,\chi)}.
+$$
 
+Assume that there exists some $\chi\not =\chi_0$ satisfying $L(s,\chi)=0$. From the results above, we deduce that $f$ extends to a holomorphic function in $\Re(s)>0$. Also, for $\Re(s)>1$, we have
 
+$$
+f(s)=\prod_{\chi}\prod_{p}\Big(\frac{1}{1-\frac{\chi(p)}{p^s}}\Big)=\prod_{p\nmid m}\prod_{\chi}\Big(\frac{1}{1-\frac{\chi(p)}{p^s}}\Big).
+$$
+
+For $p\nmid m$, since $\chi(p)^{\text{ord}(p)}=1$, we obtain that $\chi(p)$ can only take the value of $\text{ord(p)}$-th root of unity, which form a subgroup $H\le\mathbb{Z}_m^\*$ such that $\lvert H\rvert=\text{ord}(p)$. Since each characters on $H$ extend to a character on $\mathbb{Z}_m^\*$ in $\lvert \widehat{\mathbb{Z}_m^\*/H}\rvert=\lvert \mathbb{Z}_m^\*/H\rvert=\frac{\varphi(m)}{\text{ord}(p)}$ ways, we deduce that $\chi(p)$ takes the value of $\text{ord(p)}$-th root of unity $\frac{\varphi(m)}{\text{ord}(p)}$ times for each value. Hence, for $p\nmid m$,
+
+$$
+\prod_{\chi}\Big(1-\frac{\chi(p)}{p^s}\Big)=\Big(\prod_{\omega\in H}(1-\frac{\omega}{p^{s}})\Big)^{\frac{\varphi(m)}{\text{ord}(p)}}=\Big(1-\frac{1}{p^{s\cdot\text{ord}(p)}}\Big)^{\frac{\varphi(m)}{\text{ord}(p)}},
+$$
+
+and consequently, for $\Re(s)>1$,
+
+$$
+f(s)=\prod_{p\nmid m}{\Big(\frac{1}{1-\frac{1}{p^{s\cdot\text{ord}(p)}}}\Big)^{\frac{\varphi(m)}{\text{ord}(p)}}}.
+$$
+
+The right-hand side is a Dirichlet series which coefficient $a_n$ is all nonnegative real number, and it converges on $\Re(s)>1$ since $f(s)$ is finite on $\Re(s)>1$. We know that $f$ is holomorphic in $\Re(s)>0$. Therefore, from the Theorem 2, this series converges on $\Re(s)>0$. However, for real $s$,
+
+$$
+\prod_{p\nmid m}\Big(\frac{1}{1-\frac{1}{p^{s\cdot\text{ord}(p)}}}\Big)^{\frac{\varphi(m)}{\text{ord}(p)}}\ge \prod_{p\nmid m}{\Big(1+\frac{1}{p^{s\cdot\varphi(m)}}+\frac{1}{p^{2s\cdot\varphi(m)}}+\cdots\Big)}=\sum_{(n,m)=1}{\frac{1}{n^{s\cdot\varphi(m)}}},
+$$
+
+and this series diverges to infinity when $s=\frac{1}{\phi(m)}>0$, a contradiction. Therefore, there are no $\chi\not =\chi_0$ that satisfies $L(s,\chi) = 0$, and this completes the proof of the Dirichlet's theorem.
