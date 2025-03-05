@@ -62,7 +62,7 @@ $$
 L(s,\chi)=\prod_{p}{\frac{1}{1-\frac{\chi(p)}{p^s}}}.
 $$
 
-for $\Re(s)>1$, because $L$ absolutely converges in this range. Moreover, for sufficiently large $p$, we can assume that $1-\frac{\chi(p)}{p^s}$ lies in $\mathbb{C}\setminus(-\infty,0]$, the principal branch of complex logarithms, allowing us to write
+for $\Re(s)>1$, because $L$ absolutely converges on this range. Moreover, for sufficiently large $p$, we can assume that $1-\frac{\chi(p)}{p^s}$ lies in $\mathbb{C}\setminus(-\infty,0]$, the principal branch of complex logarithms, allowing us to write
 
 $$
 L(s,\chi)=\exp\Big({\sum_{p}{-\log\big(1-\frac{\chi(p)}{p^s}\big)}}\Big)=\exp\Big({\sum_{p}{\frac{\chi(p)}{p^s}+O(\frac{\chi(p^2)}{p^{2s}})}}\Big)=\exp\Big({\sum_{p}{\frac{\chi(p)}{p^s}+O(1)}}\Big).
@@ -79,10 +79,10 @@ D(s)=\sum_{n}{\frac{a_n}{n^s}}.
 $$
 
 ### Theorem 1
-If the series defining $D(s)$ converges at some point $s=s_0$, it converges uniformly on each compact subset of $\Re(s)>\Re(s_0)$. Hence, $D$ is holomorphic in this half-plane.
+If the series defining $D(s)$ converges for some $s=s_0$, then it converges uniformly on each compact subset of $\Re(s)>\Re(s_0)$. Hence, $D$ is holomorphic on this half-plane.
 
 ### Proof
-Assume, without loss of generality, that $s_0=0$. Let $S_n=a_1+\cdots+a_n$. By assumption, there exists a constant $C$ such that $\lvert S_n \rvert\le C$. For $\Re(s)>0$, since $\frac{S_n}{n^s}\rightarrow0$ as $n\rightarrow\infty$, applying Abel's summation lemma yields
+Assume, without loss of generality, that $s_0=0$. Define $S_n=a_1+\cdots+a_n$, and there exists a constant $C$ such that $\lvert S_n \rvert\le C$. For $\Re(s)>0$, since $\frac{S_n}{n^s}\rightarrow0$ as $n\rightarrow\infty$, applying Abel's summation lemma gives
 
 $$
 \Big\lvert \sum_{n}{\frac{a_n}{n^s}}\Big\rvert=\Big\lvert\sum_{n}{S_n(\frac{1}{n^s}-\frac{1}{(n+1)^s})}\Big\rvert\le C\sum_{n}{\Big\lvert\frac{1}{n^s}-\frac{1}{(n+1)^s}\Big\rvert}.
@@ -100,11 +100,11 @@ $$
 \lvert D(s)\rvert \le C\lvert s\rvert\sum_{n}\frac{1}{n^{\Re(s)+1}},
 $$
 
-which converges uniformly on any compact subset of $\Re(s)>0$, since it is contained within some region $\Re(s)>\varepsilon>0$.
+which converges uniformly on any compact subset of $\Re(s)>0$, as they lie in some region $\Re(s)>\varepsilon>0$.
 
 <div style="text-align: right"> $\square$ </div>
 
-An analogous application of Abel's summation lemma shows that $L(s,\chi)$ converges for real positive $s$ and $\chi\not =\chi_0$. From the previous theorem, we conclude that $L(s,\chi)$ is holomorphic for $\Re(s)>0$, implying that $L(1,\chi)$ is finite for $\chi\not =\chi_0$. 
+A similar application of Abel's summation lemma shows that $L(s,\chi)$ converges for a positive real $s$ when $\chi\not =\chi_0$, making it holomorphic on $\Re(s)>0$. Consequently, $L(1,\chi)$ is finite for $\chi\not =\chi_0$. 
 
 For $\Re(s)>1$, we also have 
 
@@ -112,25 +112,25 @@ $$
 L(s,\chi_0)=\prod_{p\nmid m}{\frac{1}{1-p^{-s}}}=\zeta(s)\prod_{p\mid m}{(1-p^{-s})}.
 $$
 
-Additionally,
+Rewriting $\zeta(s)$,
 
 $$
 \zeta(s)=\frac{1}{s-1}+\sum_{n}{\frac{1}{n^s}}-\int_{1}^{\infty}{\frac{1}{t^s}dt}=\frac{1}{s-1}+\sum_{n}{\Big(\frac{1}{n^s}-\int_{n}^{n+1}{\frac{1}{t^s}dt}\Big)}=\frac{1}{s-1}+\sum_{n}{\int_{n}^{n+1}{\Big(\frac{1}{n^s}-\frac{1}{t^s}\Big)dt}}.
 $$
 
-We note that
+Using
 
 $$
 \Big\lvert\int_{n}^{n+1}{\Big(\frac{1}{n^s}-\frac{1}{t^s}\Big)dt}\Big\rvert\le\sup_{n\le x\le n+1}\Big\lvert\frac{1}{n^s}-\frac{1}{t^s}\Big\rvert=\Big\lvert\frac{1}{n^s}-\frac{1}{(n+1)^s}\Big\rvert\le\frac{\lvert s\rvert}{n^{\Re(s)+1}},
 $$
 
-so the series of integrals converges for $\Re(s)>0$. Since each integral is holomorphic for $\Re(s)>0$, the series is holomorphic in this region. Therefore, $\zeta(s)$ extends to a meromorphic function with a single simple pole at $s=1$ for $\Re(s)>0$, and $L(s,\chi_0)$ extends similarly. In other words, $L(s,\chi_0)$ is holomorphic for $\Re(s)>0$, except for a simple pole at $s=1$.
+we conclude that the series of integrals converges on $\Re(s)>0$. Since each integral is holomorphic on $\Re(s)>0$, the series is also holomorphic on this region. Therefore, $\zeta(s)$ extends to a meromorphic function with a single simple pole at $s=1$ for $\Re(s)>0$, and $L(s,\chi_0)$ extends similarly. In other words, $L(s,\chi_0)$ is holomorphic on $\Re(s)>0$, except for a simple pole at $s=1$.
 
 ### Theorem 2
-Suppose that all $a_n$ are non-negative real numbers. If the series defining $D(s)$ converges for $\Re(s)>s_0$ for some real $s_0$, and $D(s)$ extends to a holomorphic function in $\Re(s)>s_0-\varepsilon$ for some $\varepsilon>0$, then the series converges for $\Re(s)>s_0-\varepsilon$.
+Suppose that all $a_n$ are non-negative real numbers. If the series defining $D(s)$ converges on $\Re(s)>s_0$ for some real $s_0$, and $D(s)$ extends to a holomorphic function on $\Re(s)>s_0-\varepsilon$ for some $\varepsilon>0$, then the series converges on $\Re(s)>s_0-\varepsilon$.
 
 ### Proof
-Assume, without loss of generality, that $s_0=0$. By the theorem 1, it suffices to show that the series converges for all real $s>-\varepsilon$. Since $D$ is holomorphic in $\Re(s)>-\varepsilon$, we can write $D$ as
+Without loss of generality, assume $s_0=0$. By Theorem 1, it suffices to show that the series converges for all real $s>-\varepsilon$. Since $D(s)$ is holomorphic on $\Re(s)>-\varepsilon$, we can write $D$ as
 
 $$
 D(s)=\sum_{m}{\frac{D^{(m)}(1)}{m!}(s-1)^m},
@@ -142,49 +142,49 @@ $$
 D^{(m)}(s)=\sum_{n}{\frac{a_n(-\log{n})^m}{n^s}}.
 $$
 
-We supposed that $a_n\ge 0$, so $(-1)^mD^{(m)}(1)$ is a convergent series with positive terms. Thus, we can rewrite $D$ as
+Since $a_n\ge 0$, each $(-1)^mD^{(m)}(1)$ is a convergent series with positive terms. Thus, we can rewrite $D$ as
 
 $$
 D(s)=\sum_{n}{\frac{a_n}{n}\sum_{m}{\frac{((1-s)\log{n})^m}{m!}}}=\sum_{n}{\frac{a_n}{n}e^{(1-s)\log{n}}}=\sum_{n}{\frac{a_n}{n^s}},
 $$
 
-implying that this series also converges at $s>-\varepsilon$. 
+implying that this series also converges for $s>-\varepsilon$. 
 
 <div style="text-align: right"> $\square$ </div>
 
-This theorem is essential for the final step of the proof, which will be presented in the next section.
+This theorem is crucial for the final step of the proof in the next section.
 
 ## 4. Showing $L(s,\chi)\not = 0$ for $\chi\not =\chi_0$
 
-Define $f$ by
+Define
 $$
 f(s)=\prod_{\chi}{L(s,\chi)}.
 $$
 
-Assume that there exists some $\chi\not =\chi_0$ satisfying $L(s,\chi)=0$. From the results above, we deduce that $f$ extends to a holomorphic function in $\Re(s)>0$. Also, for $\Re(s)>1$, we have
+If some $\chi \neq \chi_0$ satisfies $L(s,\chi) = 0$, then from the previous results, $f(s)$ extends holomorphically to $\Re(s) > 0$. For $\Re(s) > 1$,
 
 $$
 f(s)=\prod_{\chi}\prod_{p}\Big(\frac{1}{1-\frac{\chi(p)}{p^s}}\Big)=\prod_{p\nmid m}\prod_{\chi}\Big(\frac{1}{1-\frac{\chi(p)}{p^s}}\Big).
 $$
 
-For $p\nmid m$, since $\chi(p)^{\text{ord}(p)}=1$, we obtain that $\chi(p)$ can only take the value of $\text{ord(p)}$-th root of unity, which form a subgroup $H\le\mathbb{Z}_m^\*$ such that $\lvert H\rvert=\text{ord}(p)$. Since each characters on $H$ extend to a character on $\mathbb{Z}_m^\*$ in $\lvert \widehat{\mathbb{Z}_m^\*/H}\rvert=\lvert \mathbb{Z}_m^\*/H\rvert=\frac{\varphi(m)}{\text{ord}(p)}$ ways, we deduce that $\chi(p)$ takes the value of $\text{ord(p)}$-th root of unity $\frac{\varphi(m)}{\text{ord}(p)}$ times for each value. Hence, for $p\nmid m$,
+For $p\nmid m$, since $\chi(p)^{\text{ord}(p)}=1$, we obtain that $\chi(p)$ can only take the value of $\text{ord(p)}$-th root of unity. These roots form a subgroup $H\le\mathbb{Z}_m^\*$ of order $\lvert H\rvert=\text{ord}(p)$. Each characters on $H$ extend to a character on $\mathbb{Z}_m^\*$ in exactly $\lvert \widehat{\mathbb{Z}_m^\*/H}\rvert=\lvert \mathbb{Z}_m^\*/H\rvert=\frac{\varphi(m)}{\text{ord}(p)}$ ways, implying that each root of unity appears with multiplicity $\frac{\varphi(m)}{\text{ord}(p)}$ in $\chi(p)$. Consequently, for $p \nmid m$,
 
 $$
-\prod_{\chi}\Big(1-\frac{\chi(p)}{p^s}\Big)=\Big(\prod_{\omega\in H}(1-\frac{\omega}{p^{s}})\Big)^{\frac{\varphi(m)}{\text{ord}(p)}}=\Big(1-\frac{1}{p^{s\cdot\text{ord}(p)}}\Big)^{\frac{\varphi(m)}{\text{ord}(p)}},
+\prod_{\chi}\Big(1-\frac{\chi(p)}{p^s}\Big)=\Big(\prod_{\omega\in H}(1-\frac{\omega}{p^{s}})\Big)^{\frac{\varphi(m)}{\text{ord}(p)}}=\Big(1-\frac{1}{p^{s\cdot\text{ord}(p)}}\Big)^{\frac{\varphi(m)}{\text{ord}(p)}}.
 $$
 
-and consequently, for $\Re(s)>1$,
+Thus, for $\Re(s)>1$,
 
 $$
 f(s)=\prod_{p\nmid m}{\Big(\frac{1}{1-\frac{1}{p^{s\cdot\text{ord}(p)}}}\Big)^{\frac{\varphi(m)}{\text{ord}(p)}}}.
 $$
 
-The right-hand side is a Dirichlet series which coefficient $a_n$ is all nonnegative real number, and it converges on $\Re(s)>1$ since $f(s)$ is finite on $\Re(s)>1$. We know that $f$ is holomorphic in $\Re(s)>0$. Therefore, from the Theorem 2, this series converges on $\Re(s)>0$. However, for real $s$,
+The right-hand side is a Dirichlet series with nonnegative real coefficients $a_n$ and converges on $\Re(s) > 1$ since $f(s)$ is finite on this region. As $f(s)$ is holomorphic on $\Re(s) > 0$, Theorem 2 implies that this series also converges on $\Re(s) > 0$. However, for real $s$,
 
 $$
-\prod_{p\nmid m}\Big(\frac{1}{1-\frac{1}{p^{s\cdot\text{ord}(p)}}}\Big)^{\frac{\varphi(m)}{\text{ord}(p)}}\ge \prod_{p\nmid m}{\Big(1+\frac{1}{p^{s\cdot\varphi(m)}}+\frac{1}{p^{2s\cdot\varphi(m)}}+\cdots\Big)}=\sum_{(n,m)=1}{\frac{1}{n^{s\cdot\varphi(m)}}},
+\prod_{p\nmid m}\Big(\frac{1}{1-\frac{1}{p^{s\cdot\text{ord}(p)}}}\Big)^{\frac{\varphi(m)}{\text{ord}(p)}}\ge \prod_{p\nmid m}{\Big(1+\frac{1}{p^{s\cdot\varphi(m)}}+\frac{1}{p^{2s\cdot\varphi(m)}}+\cdots\Big)}=\sum_{(n,m)=1}{\frac{1}{n^{s\cdot\varphi(m)}}}.
 $$
 
-and this series diverges to infinity when $s=\frac{1}{\phi(m)}>0$, a contradiction. Therefore, there are no $\chi\not =\chi_0$ that satisfies $L(s,\chi) = 0$, and this completes the proof of the Dirichlet's theorem.
+The series on the right diverges for $s = \frac{1}{\varphi(m)} > 0$, contradicting the assumption that $f(s)$ converges on $\Re(s)>0$. Thus, no character $\chi \neq \chi_0$ satisfies $L(s, \chi) = 0$, completing the proof of Dirichlet's theorem.
 
 ***
