@@ -1,6 +1,7 @@
 /* start custom scss snippet */
-.toc a {
-  white-space: normal !important;
-  word-break: break-word;
+.toc {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 /* end custom scss snippet */
