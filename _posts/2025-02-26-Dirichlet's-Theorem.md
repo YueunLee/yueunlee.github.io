@@ -78,10 +78,10 @@ $$
 D(s)=\sum_{n}{\frac{a_n}{n^s}}.
 $$
 
-### Theorem 1
+### Theorem 1 <!-- omit in toc -->
 If the series defining $D(s)$ converges for some $s=s_0$, then it converges uniformly on each compact subset of $\Re(s)>\Re(s_0)$. Hence, $D$ is holomorphic on this half-plane.
 
-### Proof
+### Proof <!-- omit in toc -->
 Assume, without loss of generality, that $s_0=0$. Define $S_n=a_1+\cdots+a_n$, and there exists a constant $C$ such that $\lvert S_n \rvert\le C$. For $\Re(s)>0$, since $\frac{S_n}{n^s}\rightarrow0$ as $n\rightarrow\infty$, applying Abel's summation lemma gives
 
 $$
@@ -126,10 +126,10 @@ $$
 
 we conclude that the series of integrals converges on $\Re(s)>0$. Since each integral is holomorphic on $\Re(s)>0$, the series is also holomorphic on this region. Therefore, $\zeta(s)$ extends to a meromorphic function with a single simple pole at $s=1$ for $\Re(s)>0$, and $L(s,\chi_0)$ extends similarly. In other words, $L(s,\chi_0)$ is holomorphic on $\Re(s)>0$, except for a simple pole at $s=1$.
 
-### Theorem 2
+### Theorem 2 <!-- omit in toc -->
 Suppose that all $a_n$ are non-negative real numbers. If the series defining $D(s)$ converges on $\Re(s)>s_0$ for some real $s_0$, and $D(s)$ extends to a holomorphic function on $\Re(s)>s_0-\varepsilon$ for some $\varepsilon>0$, then the series converges on $\Re(s)>s_0-\varepsilon$.
 
-### Proof
+### Proof <!-- omit in toc -->
 Without loss of generality, assume $s_0=0$. By Theorem 1, it suffices to show that the series converges for all real $s>-\varepsilon$. Since $D(s)$ is holomorphic on $\Re(s)>-\varepsilon$, we can write $D$ as
 
 $$
