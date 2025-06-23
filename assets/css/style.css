@@ -5,3 +5,21 @@ body {
   font-family: sans-serif;
   line-height: 1.6;
 }
+#refs {
+    counter-reset: ref-counter;
+    list-style: none;
+    padding-left: 0;
+}
+#refs li {
+    counter-increment: ref-counter;
+    margin-bottom: 0.5em;
+    position: relative;
+    padding-left: 2em;
+}
+#refs li::before {
+    content: "[" counter(ref-counter) "] ";
+    position: absolute;
+    left: 0;
+    color: #333;
+    font-weight: bold;
+}

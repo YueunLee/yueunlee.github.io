@@ -1,0 +1,430 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{authblk}
+\usepackage{mathtools}
+\usepackage[numbers]{natbib}
+\usepackage{setspace}
+\onehalfspacing
+
+\geometry{margin=1in}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma} 
+\newtheorem{definition}{Definition}
+\newtheorem{notation}{Notation}
+\DeclareMathOperator{\tr}{tr}   
+
+\title{Random Matrix Theory for High-Dimensional Covariance Estimation: From Classical Results to Concentration of Measure}
+\author{Yueun Lee}
+\affil{Department of Statistics, Seoul National University}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This report provides a comprehensive survey of random matrix theory (RMT) techniques for analyzing sample covariance matrices in high-dimensional statistical settings. We begin by examining the limitations of classical covariance estimation when the dimension $p$ is comparable to or exceeds the sample size $n$, where traditional asymptotic guarantees fail. We present the foundational Marčenko-Pastur law, which characterizes the limiting spectral distribution of sample covariance matrices under i.i.d. Gaussian assumptions, and discuss its extensions through the Silverstein-Bai theorem to more general covariance structures.
+
+A key focus of this report is the significant generalization achieved through concentration of measure theory. We demonstrate how the restrictive assumption of entrywise independence in classical RMT can be relaxed by requiring only that the data vectors exhibit concentration properties. Specifically, we show that concentrated random vectors—including those arising from Lipschitz transformations of Gaussian vectors—satisfy the key structural properties needed for spectral analysis, thereby extending the applicability of RMT to realistic data-generating processes in machine learning.
+
+This survey primarily based on the comprehensive framework established in \citep{couillet2022random}.
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\newpage
+\section{Introduction}
+Random Matrix Theory provides a versatile framework for analyzing and improving classical machine learning methods in high-dimensional settings. Consider the following setup: let $\mathbf{X} = [\mathbf{x}_1, \dots, \mathbf{x}_n] \in \mathbb{R}^{p \times n}$ be a data matrix whose columns $\mathbf{x}_i$ are independent samples from $\mathcal{N}(0, \mathbf{C})$, and let the maximum likelihood estimator of the covariance be $\hat{\mathbf{C}} = \frac{1}{n}\mathbf{X}\mathbf{X}^T$. In the classical regime, where $n \to \infty$ with fixed $p$, the law of large numbers implies $\|\hat{\mathbf{C}} - \mathbf{C}\| \xrightarrow{\mathrm{a.s.}} 0$, i.e., $\hat{\mathbf{C}}$ converges almost surely to $\mathbf{C}$ in operator norm.
+
+Modern datasets, however, often have $p$ comparable to or larger than $n$. Suppose $p = \mathcal{O}(n^d)$ for some $d > 0$. Although concentration inequalities still guarantee $\|\hat{\mathbf{C}} - \mathbf{C}\|_{\infty} \xrightarrow{\mathrm{a.s.}} 0$, operator-norm convergence fails when $p > n$ since $\hat{\mathbf{C}}$ becomes singular and cannot approximate a full-rank $\mathbf{C}$. This is critical because many statistical procedures (e.g., regression, classification) depend on the spectral properties of $\hat{\mathbf{C}}$, and without spectral-norm consistency, we lose control over eigenvalues and eigenvectors.
+
+To overcome this, one studies the asymptotic spectral distribution of $\hat{\mathbf{C}}$. A cornerstone result is the Mar\v{c}enko--Pastur law \citep{Marcenko1967}: when $\mathbf{C} = \mathbf{I}_p$ and $n, p \to \infty$ with $p/n \to c \in (0, \infty)$, the empirical spectral distribution $\mu_p = \frac{1}{p} \sum_{i=1}^p \delta_{\lambda_i(\hat{\mathbf{C}})}$ converges to the deterministic measure  
+$$
+\mu(dx) = (1 - c^{-1})_+\,\delta_0(x) + \frac{1}{2\pi c x} \sqrt{(x - E_-)^+ (E_+ - x)^+}\,dx,
+$$
+where $E_{\pm} = (1 \pm \sqrt{c})^2$ and $(x)^+ = \max(x, 0)$. This law precisely describes the limiting behavior of the eigenvalues of $\hat{\mathbf{C}}$, providing a rigorous foundation for high-dimensional analysis.
+
+\section{Preliminaries}
+We start with basic definitions:
+
+\begin{definition}[Resolvent]
+For a symmetric matrix $\mathbf{M} \in \mathbb{R}^{n \times n}$, the resolvent $\mathbf{Q}_\mathbf{M}(z)$ is defined, for $z \in \mathbb{C}$ not an eigenvalue of $\mathbf{M}$, as $\mathbf{Q}_\mathbf{M}(z) \coloneqq (\mathbf{M} - z\mathbf{I}_n)^{-1}$.
+\end{definition}
+
+\begin{definition}[Empirical spectral measure]
+For a symmetric matrix $\mathbf{M} \in \mathbb{R}^{n \times n}$, the empirical spectral measure $\mu_\mathbf{M}$ is defined as $\mu_\mathbf{M} \coloneqq \frac{1}{n} \sum_{i=1}^{n} \delta_{\lambda_i(\mathbf{M})}$, where $\lambda_1(\mathbf{M}), \ldots, \lambda_n(\mathbf{M})$ are the eigenvalues of $\mathbf{M}$.
+\end{definition}
+
+\begin{definition}[Stieltjes transform]
+For a real probability measure $\mu$, the Stieltjes transform $m_\mu(z)$ is defined, for all $z \in \mathbb{C} \setminus \operatorname{supp}(\mu)$, as $m_\mu(z) \coloneqq \int \frac{1}{t - z} \, \mu(dt)$.
+\end{definition}
+
+\begin{theorem}[Inverse Stieltjes transform]
+Let $a, b$ be continuity points of the probability measure $\mu$. Then:
+\begin{itemize}
+    \item $\mu([a, b]) = \frac{1}{\pi} \lim_{y \downarrow 0} \int_a^b \Im[m_\mu(x + iy)] \, dx$;
+    \item If $\mu$ admits a density $f$ at $x$, then $f(x) = \frac{1}{\pi} \lim_{y \downarrow 0} \Im[m_\mu(x + iy)]$;
+    \item If $\mu$ has an isolated point mass at $x$, then $\mu(\{x\}) = \lim_{y \downarrow 0} ( -iy m_\mu(x + iy))$.
+\end{itemize}
+\end{theorem}
+
+These definitions form the basis for analyzing eigenvalue distributions. For instance, 
+$$
+m_{\mu_\mathbf{M}}(z)=\frac1n\sum_{i=1}^{n}\int\frac{\delta_{\lambda_i(\mathbf{M})}(t)}{t-z}=\frac1n\sum_{i=1}^{n}\frac{1}{\lambda_i(\mathbf{M})-z}=\frac1n\tr \mathbf{Q}_\mathbf{M}(z).
+$$ 
+Combining this with the inverse Stieltjes transform yields a bridge between $\mathbf{Q}_\mathbf{M}$ and $\mu_\mathbf{M}$. Using Cauchy's integral formula, for any contour $\Gamma$ and any $f$ analytic in a neighborhood of $\operatorname{supp}(\mu_\mathbf{M}) \cap \Gamma^\circ$,
+$$
+\frac{1}{n} \sum_{\lambda_i(\mathbf{M}) \in \Gamma^\circ} f(\lambda_i(\mathbf{M})) = -\frac{1}{2\pi i} \oint_{\Gamma} f(z) m_{\mu_{\mathbf{M}}}(z) \, dz.
+$$
+More generally, for the spectral decomposition $\mathbf{M} = \mathbf{U} \mathbf{\Lambda} \mathbf{U}^T$, we have:
+$$
+\mathbf{U}f(\mathbf{\Lambda}; \Gamma)\mathbf{U}^T = -\frac{1}{2\pi i} \oint_{\Gamma} f(z) \mathbf{Q}_\mathbf{M}(z) \, dz,
+$$
+for $f$ analytic in a neighborhood of $\Gamma$ and its interior $\Gamma^\circ$ and $f(\mathbf{\mathbf{\Lambda}}; \Gamma) \coloneqq \operatorname{diag}(f(\lambda_i(\mathbf{M})) \cdot \mathbf{1}_{\lambda_i(\mathbf{M}) \in \Gamma^\circ})$. This enables the analysis of eigenvector projections. With $\mathbf{U} = [\mathbf{u}_1, \ldots, \mathbf{u}_n]$, we get:
+$$
+\sum_{\lambda_i(\mathbf{M}) \in \Gamma^\circ} |\mathbf{v}^T \mathbf{u}_i|^2 = -\frac{1}{2\pi i} \oint_{\Gamma} \mathbf{v}^T \mathbf{Q}_\mathbf{M}(z) \mathbf{v} \, dz.
+$$
+Thus, the resolvent $\mathbf{Q}_\mathbf{M}$ captures scalar observations of the eigenspectrum through linear functionals: $f(\lambda_i(\mathbf{M}))$ and $|\mathbf{v}^T \mathbf{u}_i|$ are accessible from $\frac{1}{n} \tr \mathbf{Q}_\mathbf{M}$ and $\mathbf{v}^T \mathbf{Q}_\mathbf{M} \mathbf{v}$, respectively.
+
+Early approaches primarily focused on the limit of $m_{\mu_\mathbf{M}}(z)$. However, such a limit exists only for highly regular matrices $\mathbf{M}$. Moreover, $m_{\mu_\mathbf{M}}(z) = \frac{1}{n} \tr \mathbf{Q}_\mathbf{M}$ discards subspace information about eigenvectors encoded in the resolvent $\mathbf{Q}_\mathbf{M}$. To address this, modern methods introduce deterministic equivalents---matrices that yield asymptotically the same scalar observables as random ones.
+\begin{definition}[Deterministic Equivalent]\label{lem:deterministic-equivalent}
+We say that $\bar{\mathbf{Q}} \in \mathbb{R}^{n \times n}$ is a deterministic equivalent for the symmetric random matrix $\mathbf{Q} \in \mathbb{R}^{n \times n}$ if, for any deterministic matrix $\mathbf{A}$ with $\|\mathbf{A}\| = 1$ and vectors $\mathbf{a}, \mathbf{b}$ with $\|\mathbf{a}\|_2 = \|\mathbf{b}\|_2 = 1$, as $n \to \infty$, the following hold:
+$$ \frac{1}{n} \tr \mathbf{A}(\mathbf{Q} - \bar{\mathbf{Q}}) \xrightarrow{a.s.} 0, \quad a^T(\mathbf{Q} - \bar{\mathbf{Q}})b \xrightarrow{a.s.} 0. $$
+We write $\mathbf{Q} \leftrightarrow \bar{\mathbf{Q}}$.
+\end{definition}
+The notion of equivalence can be extended to random matrices by requiring $\lVert \mathbb{E}[\mathbf{Q} - \bar{\mathbf{Q}}] \rVert \to 0$, making it an equivalence relation over both deterministic and random matrices.
+
+\section{The Mar\v{c}enko--Pastur Law}
+First, we state some useful lemmas:
+\begin{lemma}[Sherman--Morrison]\label{lem:sherman-morrison}
+Let $\mathbf{A} \in \mathbb{R}^{p \times p}$ be invertible, and $\mathbf{u}, \mathbf{v} \in \mathbb{R}^p$. Then $\mathbf{A} + uv^\top$ is invertible if and only if $1 + \mathbf{v}^\top \mathbf{A}^{-1} \mathbf{u} \neq 0$, and in this case
+$$
+(\mathbf{A} + uv^\top)^{-1} = \mathbf{A}^{-1} - \frac{\mathbf{A}^{-1} \mathbf{u} \mathbf{v}^\top \mathbf{A}^{-1}}{1 + \mathbf{v}^\top \mathbf{A}^{-1} \mathbf{u}}, \quad
+(\mathbf{A} + uv^\top)^{-1} \mathbf{u} = \frac{\mathbf{A}^{-1} \mathbf{u}}{1 + \mathbf{v}^\top \mathbf{A}^{-1} \mathbf{u}}.
+$$
+\end{lemma}
+
+Applying this lemma with $\mathbf{A} = \mathbf{M} - z \mathbf{I}_p$ for $z \in \mathbb{C}$ and $\mathbf{v} = \tau \mathbf{u}$ for $\tau \in \mathbb{R}$, we obtain the following rank-1 perturbation result for the resolvent of $\mathbf{M}$.
+
+\begin{lemma}[Rank-1 perturbation lemma] \label{lem:rank-1-perturbation}
+Let $\mathbf{M}, \mathbf{A} \in \mathbb{R}^{p \times p}$ be symmetric matrices, $\mathbf{u} \in \mathbb{R}^p$, $\tau \in \mathbb{R}$, and $z \in \mathbb{C} \setminus \mathbb{R}$. Then
+$$
+\left| \tr \mathbf{A} (\mathbf{M} + \tau \mathbf{u} \mathbf{u}^\top - z \mathbf{I}_p)^{-1} - \tr \mathbf{A} (\mathbf{M} - z \mathbf{I}_p)^{-1} \right| \leq \frac{\|\mathbf{A}\|}{|\Im(z)|}.
+$$
+\end{lemma}
+
+If the entries of a random vector $\mathbf{x}$ are independent with zero mean and unit variance, then
+$$
+\mathbb{E}[\mathbf{x}^\top \mathbf{A} \mathbf{x}] = \tr \mathbf{A}.
+$$
+Moreover, since $\operatorname{Var}[\mathbf{x}^\top \mathbf{A} \mathbf{x} / p] = O(p^{-1})$, it follows that
+$$
+\frac{1}{p} \mathbf{x}^\top \mathbf{A} \mathbf{x} - \frac{1}{p} \tr \mathbf{A} \xrightarrow{p} 0,
+$$
+where the convergence is in probability. However, almost sure convergence requires stronger moment assumptions; under light-tailed entries, the following lemma ensures it and is key for deriving deterministic equivalents.
+
+\begin{lemma}[Trace lemma]\label{lem:trace}
+Let $\mathbf{x} \in \mathbb{R}^p$ have independent entries $\mathbf{x}_i$ with zero mean, unit variance, and bounded $K$-th moment, i.e., $\mathbb{E}[|\mathbf{x}_i|^K] \leq \nu_K$ for some $K \ge 1$. Then, for any matrix $\mathbf{A} \in \mathbb{R}^{p \times p}$ and integer $k \ge 1$,
+$$
+\mathbb{E}\left[|\mathbf{x}^\top \mathbf{A} \mathbf{x} - \tr \mathbf{A}|^k \right] \leq C_k \left[ (\nu_4 \tr(\mathbf{A} \mathbf{A}^\top))^{k/2} + \nu_{2k} \tr(\mathbf{A} \mathbf{A}^\top)^{k/2} \right],
+$$
+where $C_k > 0$ is a constant independent of $p$. In particular, if $\|\mathbf{A}\| \leq 1$ and the entries of $\mathbf{x}$ have bounded eighth moments, then
+$$
+\mathbb{E} \left[ (\mathbf{x}^\top \mathbf{A} \mathbf{x} - \tr \mathbf{A})^4 \right] \leq C p^2
+$$
+for some $C > 0$ independent of $p$, and consequently, as $p \to \infty$,
+$$
+\frac{1}{p} \mathbf{x}^\top \mathbf{A} \mathbf{x} - \frac{1}{p} \tr \mathbf{A} \xrightarrow{\text{a.s.}} 0.
+$$
+\end{lemma}
+
+\begin{notation}
+Let $\mathcal{A} \subset \mathbb{C}$, $z \in \mathcal{A}$, and $m \in \mathbb{C}$. Define:
+\begin{align*}
+\mathcal{Z}(\mathcal{A}) = \{ (z, m) \in \mathcal{A} \times \mathbb{C} \mid & (z < \inf(\mathcal{A}^c \cap \mathbb{R}) \text{ and } m > 0) \\
+& \text{or } (z > \sup(\mathcal{A}^c \cap \mathbb{R}) \text{ and } m < 0) \\
+& \text{or } (\Im[z] \cdot \Im[m] > 0 \text{ and } m \notin \mathbb{R}) \}.
+\end{align*}
+\end{notation}
+
+The set $\mathcal{Z}(\mathcal{A})$ generalizes valid Stieltjes transform pairs $(z, m_\mu(z))$ for $z \in \mathbb{C} \setminus \operatorname{supp}(\mu)$. It is introduced to ensure uniqueness by restricting solutions to this set.
+
+\begin{theorem}[Mar\v{c}enko and Pastur, 1967]\label{thm:marcenko-pastur}
+Let $\mathbf{X} \in \mathbb{R}^{p \times n}$ with i.i.d. columns $\mathbf{x}_i$ whose entries are independent with zero mean, unit variance, and satisfy a light-tail condition. Let $\mathbf{Q}(z) = \left(\frac{1}{n} \mathbf{X}\mathbf{X}^T - z\mathbf{I}_p\right)^{-1}$ denote the resolvent of $\frac{1}{n} \mathbf{X}\mathbf{X}^T$. Then, as $n, p \to \infty$ with $p/n \to c \in (0, \infty)$, we have:
+$$
+\mathbf{Q}(z) \leftrightarrow \bar{\mathbf{Q}}(z) := m(z) \mathbf{I}_p,
+$$
+where $(z, m(z)) \in \mathcal{Z}(\mathbb{C} \setminus [(1-\sqrt{c})^2, (1+\sqrt{c})^2])$ is the unique solution to
+$$
+z c m^2(z) - (1 - c - z) m(z) + 1 = 0.
+$$
+The measure corresponding to m(z) via the inverse Stieltjes transform admits a closed-form expression:
+$$
+\mu(dx) = (1 - c^{-1})^+ \delta_0(dx) + \frac{1}{2 \pi c x} \sqrt{(x - E_-)^+ (E_+ - x)^+} \, dx,
+$$
+where $E_\pm = (1 \pm \sqrt{c})^2$ and $(x)^+ = \max(x, 0)$. Hence, the empirical spectral distribution $\mu_{\frac{1}{n} \mathbf{X} \mathbf{X}^\top}$ converges weakly almost surely to $\mu$. This measure is known as the Mar\v{c}enko--Pastur distribution.
+\end{theorem}
+
+\subsubsection*{Proof of Theorem~\ref{thm:marcenko-pastur}}
+Instead of providing a rigorous proof, we sketch a heuristic derivation, largely following Bai and Silverstein. Assume $\bar{\mathbf{Q}}(z) = F^{-1}(z)$, where $F(z)$ is a matrix to be determined. We begin with
+\begin{align*}
+\mathbf{Q}(z) - \bar{\mathbf{Q}}(z)
+&= \mathbf{Q}(z) \left( F(z) + z \mathbf{I}_p - \frac{1}{n} \mathbf{X} \mathbf{X}^\top \right) \bar{\mathbf{Q}}(z) \\
+&= \mathbf{Q}(z) \left( F(z) + z \mathbf{I}_p - \frac{1}{n} \sum_{i=1}^n \mathbf{x}_i \mathbf{x}_i^\top \right) \bar{\mathbf{Q}}(z).
+\end{align*}
+To ensure that $\bar{\mathbf{Q}}(z)$ is a deterministic equivalent of $\mathbf{Q}(z)$, it suffices to show that for any deterministic matrix $\mathbf{A}$ with $\|\mathbf{A}\| = 1$,
+$$
+\frac{1}{p} \tr \left[ \mathbf{A} \left( \mathbf{Q}(z) - \bar{\mathbf{Q}}(z) \right) \right] \xrightarrow{\text{a.s.}} 0.
+$$
+This expression can be rewritten as
+$$
+\frac{1}{p} \tr \left[ (F(z) + z \mathbf{I}_p) \bar{\mathbf{Q}}(z) \mathbf{A} \mathbf{Q}(z) \right]
+- \frac{1}{n} \sum_{i=1}^n \frac{1}{p} \mathbf{x}_i^\top \bar{\mathbf{Q}}(z) \mathbf{A} \mathbf{Q}(z) \mathbf{x}_i \xrightarrow{\text{a.s.}} 0.
+$$
+Using Lemma~\ref{lem:sherman-morrison}, we have
+$$
+\mathbf{Q}(z) \mathbf{x}_i = \frac{\mathbf{Q}_{-i}(z) \mathbf{x}_i}{1 + \frac{1}{n} \mathbf{x}_i^\top \mathbf{Q}_{-i}(z) \mathbf{x}_i},
+$$
+where
+$$
+\mathbf{Q}_{-i}(z) := \left( \frac{1}{n} \mathbf{X}\mathbf{X}^\top - \frac{1}{n} \mathbf{x}_i \mathbf{x}_i^\top - z \mathbf{I}_p \right)^{-1}
+$$
+is independent of $\mathbf{x}_i$. Applying Lemma~\ref{lem:trace} conditionally, we approximate
+$$
+\frac{1}{p} \mathbf{x}_i^\top \bar{\mathbf{Q}}(z) \mathbf{A} \mathbf{Q}(z) \mathbf{x}_i = \frac{\frac{1}{p} \mathbf{x}_i^\top \bar{\mathbf{Q}}(z) \mathbf{A} \mathbf{Q}_{-i}(z) \mathbf{x}_i}{1 + \frac{1}{n} \mathbf{x}_i^\top \mathbf{Q}_{-i}(z) \mathbf{x}_i}\simeq \frac{\frac{1}{p} \tr\bar{\mathbf{Q}}(z) \mathbf{A} \mathbf{Q}_{-i}(z)}{1 + \frac{1}{n} \tr \mathbf{Q}_{-i}(z)}.
+$$
+Since $\mathbf{Q}(z)$ and $\mathbf{Q}_{-i}(z)$ differ by a rank-one perturbation, Lemma~\ref{lem:rank-1-perturbation} implies that
+$$
+\frac{1}{p} \tr \mathbf{Q}(z) \simeq \frac{1}{p} \tr \mathbf{Q}_{-i}(z).
+$$
+Hence, we have
+$$
+\frac{1}{p} \mathbf{x}_i^\top \bar{\mathbf{Q}}(z) \mathbf{A} \mathbf{Q}(z) \mathbf{x}_i \simeq \frac{\frac{1}{p} \tr \bar{\mathbf{Q}}(z) \mathbf{A} \mathbf{Q}(z)}{1 + \frac{1}{n} \tr \mathbf{Q}(z)}.
+$$
+Substituting back into the previous expression, we obtain
+$$
+\frac{1}{p} \tr (F(z) + z \mathbf{I}_p) \bar{\mathbf{Q}}(z) \mathbf{A} \mathbf{Q}(z) 
+\simeq \frac{\frac{1}{p} \tr \bar{\mathbf{Q}}(z) \mathbf{A} \mathbf{Q}(z)}{1 + \frac{1}{n} \tr \mathbf{Q}(z)}.
+$$
+As the right-hand side summation over $i$ no longer depends on $i$, the sum symbol vanishes. Thus, to ensure this approximation holds, we must have
+$$
+F(z) \simeq \left( -z + \frac{1}{1 + \frac{1}{n} \tr \mathbf{Q}(z)} \right) \mathbf{I}_p.
+$$
+Taking $\mathbf{A} = \mathbf{I}_p$, we deduce that $\frac{1}{p} \tr \bar{\mathbf{Q}}(z) \simeq \frac{1}{p} \tr \mathbf{Q}(z)$, and obtain the expression
+\begin{equation*}
+m(z) \coloneqq \frac{1}{p} \tr \bar{\mathbf{Q}}(z)
+= \frac{1}{p} \tr F^{-1}(z)
+\simeq \frac{1}{-z + \frac{1}{1 + \frac{1}{n} \tr \mathbf{Q}(z)}} \simeq \frac{1}{-z + \frac{1}{1 + \frac{1}{n} \tr \bar{\mathbf{Q}}(z)}}
+= \frac{1}{-z + \frac{1}{1 + \frac{p}{n} m(z)}}.
+\end{equation*}
+Passing to the limit $p, n \to \infty$ with $p/n \to c$ yields the quadratic equation
+$$
+z c m^2(z) - (1 - c - z) m(z) + 1 = 0,
+$$
+which characterizes the Stieltjes transform of the Mar\v{c}enko--Pastur distribution $\mu$. 
+\begin{flushright}
+$\blacksquare$
+\end{flushright}
+
+The Mar\v{c}enko--Pastur law characterizes the asymptotic spectral distribution of sample covariance matrices under fairly general conditions. Moreover, the following theorem by Silverstein and Bai relaxes some assumptions by allowing general covariance structures with bounded operator norm:
+\begin{theorem}[Silverstein and Bai, 1995]\label{thm:silverstein-bai}
+Let $\mathbf{X} = \mathbf{C}^{1/2} \mathbf{Z} \in \mathbb{R}^{p \times n}$
+where $\mathbf{C} \in \mathbb{R}^{p \times p}$ is symmetric positive semidefinite with bounded operator norm, i.e., $\limsup_p \|\mathbf{C}\| < \infty$, and $\mathbf{Z} \in \mathbb{R}^{p \times n}$ has independent entries with zero mean and unit variance satisfying some light tail conditions. Then, as $n,p \to \infty$ with $p/n\to c \in (0, \infty)$, letting $\mathbf{Q}(z) = \left(\frac{1}{n} \mathbf{X} \mathbf{X}^T - z \mathbf{I}_p\right)^{-1}$, we have
+$$
+\mathbf{Q}(z) \leftrightarrow \bar{\mathbf{Q}}(z) = -\frac{1}{z} \left( \mathbf{I}_p + \tilde{m}_p(z) \mathbf{C} \right)^{-1},
+$$
+where the pair $(z, \tilde{m}_p(z))$ is the unique solution in $\mathcal{Z}(\mathbb{C} \setminus \mathbb{R}^+)$ of
+$$
+\tilde{m}_p(z) = \left( -z + \frac{1}{n} \tr \mathbf{C} \left( \mathbf{I}_p + \tilde{m}_p(z) \mathbf{C} \right)^{-1} \right)^{-1}.
+$$
+Moreover, if the empirical spectral measure $\mu_\mathbf{C}$ of $\mathbf{C}$ converges to a limiting measure $\nu$ as $p \to \infty$, then the empirical spectral measure of $\frac{1}{n} \mathbf{X} \mathbf{X}^T$ converges almost surely to $\mu$, where $\mu$ is the unique measure having Stieltjes transform $m(z)$ with
+$$
+m(z) = \frac{1}{c} \tilde{m}(z) +\frac{1-c}{cz}.
+$$
+\end{theorem}
+However, despite its generality, the approach is limited in many practical scenarios, as decomposing the data matrix $\mathbf{X}$ into the form $\mathbf{C}^{1/2} \mathbf{Z}$, where $\mathbf{Z}$ consists of independent components, is often infeasible due to complex dependencies or structural constraints in the data. This limits the applicability of classical random matrix results in such settings, which has led to the use of probabilistic tools such as concentration of measure.
+
+\section{Concentration of measure}
+As discussed above, the classical model described in Theorem~\ref{thm:silverstein-bai} is highly restrictive: each observation $ \mathbf{x}_i $ must be expressible as $ \mathbf{x}_i = \mathbf{C}^{1/2} \mathbf{z}_i $, where $ \mathbf{z}_i $ is a random vector with independent entries. This factorization is particularly tractable in the Gaussian setting, where $ \mathbf{z}_i \sim \mathcal{N}(0, \mathbf{I}_p) $, resulting in $ \mathbf{x}_i \sim \mathcal{N}(0, \mathbf{C}) $. However, many multivariate distributions of practical interest do not admit such a decomposition. More critically, real-world data encountered in machine learning often cannot be linearly whitened into vectors with independent entries, rendering the assumptions behind Theorem~\ref{thm:silverstein-bai} inadequate in these settings.
+
+This modeling limitation was significantly relaxed by \citet{elkaroui2009} and \citet{pajor2009}, who showed that the proof of Theorem~\ref{thm:silverstein-bai} hinges not on the entrywise independence of the $ \mathbf{z}_i $, but rather on two key structural properties: (i) the independence across the samples $ \mathbf{x}_i $ (even if the entries of each vector are dependent), and (ii) the convergence
+$$
+\frac{1}{n} \mathbf{x}_i^\top \mathbf{Q}_{-i}(z) \mathbf{x}_i - \frac{1}{n} \tr\mathbf{Q}_{-i} \mathbf{C} \to 0,
+$$
+in some probabilistic sense, where $ \mathbf{Q}_{-i}(z) = \left( \frac{1}{n} \mathbf{X}\mathbf{X}^\top - \frac{1}{n} \mathbf{x}_i \mathbf{x}_i^\top - z \mathbf{I}_p \right)^{-1} $. Notably, this convergence holds not only when the entries of $\mathbf{z}_i$ are standard i.i.d., but also when $ \mathbf{x}_i $ is a \emph{concentrated random vector}~\citep{elkaroui2009}, thereby significantly extending the applicability of Theorem~\ref{thm:silverstein-bai}.
+
+This extension is especially relevant in modern data settings, where realistic observations often take the form $ f(\mathbf{x}) $, with $ \mathbf{x} \sim \mathcal{N}(0, \mathbf{I}_p) $ and $ f : \mathbb{R}^p \to \mathbb{R}^q $ a 1-Lipschitz map. Gaussian vectors are known to be concentrated, and this property is preserved under Lipschitz transformations, so $ f(\mathbf{x}) $ inherits concentration regardless of how intricate or nonlinear the dependencies between its entries may be. Crucially, many data generation and feature extraction processes in machine learning—such as generative models like GANs or inference pipelines based on neural networks—are compositions of such Lipschitz mappings. The class of concentrated random vectors therefore provides a theoretically principled and practically expressive framework to model not only synthetic but also real-world data.
+
+We now formalize the concentration of measure framework that underpins this generalization.
+
+\begin{definition}[Concentration of a random variable]
+Let $\alpha : \mathbb{R}^+ \rightarrow [0,1]$ be a non-increasing function with $\alpha(\infty) = 0$. A random variable $x$ is $\alpha$-concentrated, and we write $x \propto \alpha$, if, for an independent copy $x'$ of $x$, and all $t > 0$,
+$$
+\mathbb{P}(|x - x'| > t) \leq \alpha(t).
+$$
+\end{definition}
+This implies that two independent realizations of $x$ cannot be far apart with high probability.
+\begin{definition}[Concentration around a pivot]
+Let $\alpha : \mathbb{R}^+ \rightarrow [0,1]$ be a non-increasing function and $a \in \mathbb{R}$. Then $x$ is $\alpha$-concentrated around the pivot $a$, denoted $x \in a \pm \alpha$, if, for all $t > 0$,
+$$
+\mathbb{P}(|x - a| > t) \leq \alpha(t).
+$$
+\end{definition}
+These two notions are not formally equivalent, but we have the implication
+$$
+x \propto \alpha \quad \Rightarrow \quad x \in M_x \pm 2\alpha \quad \Rightarrow \quad x \propto 4\alpha(\cdot / 2),
+$$
+where $M_x$ is a median of $x$. Moreover, as is easily observed, concentrated random vectors are closed under addition, multiplication, and mappings by Lipschitz functions.
+
+\begin{definition}[Exponential concentration]
+A random variable $ x $ is said to be exponentially concentrated if it is $ \alpha $-concentrated for some function $\alpha(\cdot) = C e^{-\left( \cdot/\sigma \right)^q}$, where $ C, \sigma, q > 0 $.
+\end{definition}
+Exponential concentrations are fast and induce a lot of convenient properties. In particular, using the formula $\mathbb{E}[|x|^k] = \int_0^{\infty} \mathbb{P}(|x|^k > t) \, dt$, it appears that all (absolute) moments of exponentially concentrated random variables exist. Moreover, if $x$ exponentially concentrates around some constant, i.e., $\mathbb{P}(|x-M|>t)\le Ce^{-(t/\sigma)^q}$, then
+\begin{equation*}
+\left|\mathbb{E}[x] - M\right|\leq \mathbb{E}|x - M|=\int_0^\infty \mathbb{P}(|x - M| \ge t) dt\le \int_0^\infty Ce^{-c(t/\sigma)^q} dt = C\, \Gamma\left(1/q + 1\right)\sigma.
+\end{equation*}
+Hence, if a random variable exponentially concentrates around some constant, then up to a change of constant, it also exponentially concentrates around its expectation. Similarly, we have the implications 
+\begin{align*}
+x \in a \pm Ce^{-(\cdot/\sigma)^q} &\Rightarrow \forall r \geq q, \quad \mathbb{E}[|x - a|^r] \leq C\Gamma(r/q + 1)\sigma^r \\
+&\Rightarrow x \in a \pm Ce^{-(\cdot/\sigma)^q/e}
+\end{align*}
+Thus, exponential concentration is equivalent to controlled growth by $\sigma^r$ of all moments $r \geq q$. This is particularly appealing when moments occasionally turn out more convenient to deal with than bounds on tail probabilities.
+
+Random vectors—particularly in high dimensions—tend to avoid their statistical means or medians. For example, Gaussian random vectors $ \mathbf{x} \sim \mathcal{N}(\mathbf{0}, \mathbf{I}_p) $ have zero mean but concentrate in an $ O(1) $-thick shell around the sphere of radius $ \sqrt{p} $ in $ \mathbb{R}^p $. Therefore, the notion of concentration cannot be extended to random vectors in an elementwise manner. Instead, given a normed vector space $ (E, \| \cdot \|) $, we say that a random vector $ \mathbf{x} \in E $ is concentrated with respect to a class of functions $ \mathcal{F} : \mathbb{R}^p \to \mathbb{R} $ if, for all $ f \in \mathcal{F} $, the scalar random variable $ f(\mathbf{x}) $ is concentrated.
+
+\begin{definition}[Lipschitz concentration]
+A random vector $\mathbf{x} \in E$ is Lipschitz $\alpha$-concentrated with respect to the norm $\| \cdot \|$ if, for every 1-Lipschitz function $f: E \rightarrow \mathbb{R}$, we have one of the following:
+\begin{itemize}
+    \item $f(\mathbf{x}) \propto \alpha$, denoted $\mathbf{x} \propto \alpha$;
+    \item $f(\mathbf{x}) \in M_f \pm \alpha$, denoted $\mathbf{x} \mathrel{\overset{M}{\propto}} \alpha$;
+    \item $f(\mathbf{x}) \in \mathbb{E}[f(\mathbf{x})] \pm \alpha$, denoted $\mathbf{x} \mathrel{\overset{\mathbb{E}}{\propto}} \alpha$,
+\end{itemize}
+where $M_f$ is a median of $f(\mathbf{x})$.
+\end{definition}
+
+\begin{definition}[Quasi-convex function]
+A function $f: E \rightarrow \mathbb{R}$ is quasi-convex if, for all $t \in \mathbb{R}$, the sublevel sets $\{\mathbf{x} \in E \mid f(\mathbf{x}) \leq t\}$ are convex. Equivalently, $f$ is quasi-convex if for all $\mathbf{x}, \mathbf{y} \in E$ and all $\lambda \in [0,1]$,
+$$
+f(\lambda \mathbf{x} + (1 - \lambda) \mathbf{y}) \leq \max\{f(\mathbf{x}), f(\mathbf{y})\}.
+$$
+\end{definition} 
+
+\begin{definition}[Convex concentration]
+A vector $\mathbf{x} \in E$ is (Lipschitz) convexly $\alpha$-concentrated for the norm $\| \cdot \|$ if, for any 1-Lipschitz and quasi-convex function $f: E \rightarrow \mathbb{R}$, one of the following holds:
+\begin{itemize}
+    \item $f(\mathbf{x}) \propto \alpha$, denoted $\mathbf{x} \propto_{c} \alpha$;
+    \item $f(\mathbf{x}) \in M_f \pm \alpha$, denoted $\mathbf{x} \mathrel{\overset{M}{\propto}}_{c} \alpha$;
+    \item $f(\mathbf{x}) \in \mathbb{E}[f(\mathbf{x})] \pm \alpha$, denoted $\mathbf{x} \mathrel{\overset{\mathbb{E}}{\propto}}_{c} \alpha$,
+\end{itemize}
+where $M_f$ is a median of $f(\mathbf{x})$.
+\end{definition}
+
+Similarly, these notions are not fully equivalent, but are somehow related. For instance, in the case of exponential concentration,
+\begin{equation*}
+\mathbf{x} \mathrel{\overset{\mathbb{E}}{\propto}} Ce^{-(\cdot/\sigma)^q} \Rightarrow \mathbf{x} \mathrel{\overset{\mathbb{E}}{\propto}}_{c} Ce^{-(\cdot/\sigma)^q} \Rightarrow \mathbf{x} \in \mathbb{E}[\mathbf{x}] \pm e^{-(\cdot/\sigma)^q}.
+\end{equation*}
+For convenience, we refer to such vectors as exponentially convexly concentrated.
+
+To provide a quite general and flexible definition for deterministic equivalents, we further restrict the function space.
+\begin{definition}[Linear concentration]
+A random vector $\mathbf{x} \in E$ is linearly $\alpha$-concentrated around the deterministic equivalent $\bar{\mathbf{x}}$ with respect to the norm $\| \cdot \|$ in $E$, if, for all unit norm linear functional $u : E \to \mathbb{R}$, $u(\mathbf{x}) \in u(\bar{\mathbf{x}}) \pm \alpha$.
+\end{definition}
+
+The most important property of linear concentration is that, if a random matrix $\mathbf{A}$ is linearly concentrated with respect to the operator norm, then for all matrix $\mathbf{A}\in\mathbb{R}^{p\times p}$ with $\|\mathbf{A}\| = 1$ and vectors $\mathbf{a}, \mathbf{b}\in\mathbb{R}^{p}$ with $\|\mathbf{a}\|_2 = \|\mathbf{b}\|_2 = 1$,
+$$
+\frac{1}{n} \tr \mathbf{A}(\mathbf{Q} - \bar{\mathbf{Q}}) \xrightarrow{p} 0, \quad a^T(\mathbf{Q} - \bar{\mathbf{Q}})b \xrightarrow{p} 0,
+$$
+and moreover, if the concentration is exponential, then the convergence is also almost sure. This result implies that the newly defined notion of deterministic equivalents from a linear concentration standpoint automatically induces the former Definition \ref{lem:deterministic-equivalent}.
+
+We now restate the trace lemma in the framework of measure concentration. Let $\mathbf{x}$ be a random vector that is exponentially convexly concentrated, and let $\mathbf{A}$ be a symmetric positive semidefinite matrix. Note that every symmetric matrix can be decomposed into the sum of its positive semidefinite part and negative semidefinite part. Since the mapping $\mathbf{x} \mapsto \| \mathbf{A}^{1/2} \mathbf{x} \|$ is both convex and Lipschitz, it follows that $\| \mathbf{A}^{1/2} \mathbf{x} \|$ is also exponentially convexly concentrated. Consequently, the quadratic form $\mathbf{x}^{\mathrm{T}} \mathbf{A} \mathbf{x} = \| \mathbf{A}^{1/2} \mathbf{x} \|^2$ inherits this concentration property. Therefore, $\mathbf{x}^{\mathrm{T}} \mathbf{A} \mathbf{x}$ concentrates exponentially around its expectation $\mathbb{E}[\mathbf{x}^{\mathrm{T}} \mathbf{A} \mathbf{x}] = \mathrm{tr}(\mathbb{E}[\mathbf{x} \mathbf{x}^{\mathrm{T}}] \mathbf{A})$, up to a change of constant. This leads to the following trace lemma for concentrated vectors.
+
+\begin{lemma}[Trace lemma for concentrated vectors]
+Let $\mathbf{A} \in \mathbb{R}^{p \times p}$ and $\mathbf{x} \in \mathbb{R}^p$ such that $\mathbf{x} \mathrel{\overset{\mathbb{E}}{\propto}}_{c} Ce^{-(\cdot/\sigma)^q}$. Then,
+\begin{align*}
+\mathbf{x}^{\mathrm{T}}\mathbf{A}\mathbf{x} \in \mathrm{tr}(\mathbb{E}[\mathbf{x}\mathbf{x}^{\mathrm{T}}]\mathbf{A}) \pm C' \left( e^{-(\cdot/4\sigma\|\mathbf{A}\|\cdot\mathbb{E}[\|\mathbf{x}\|])^q} + e^{-(\cdot/2\|\mathbf{A}\|\sigma^2)^{q/2}} \right)
+\end{align*}
+for some constant $C' > 0$ depends only on $C$ and $q$.
+\end{lemma}
+
+Finally, we have the following concentration for the resolvent.
+\begin{lemma}[Concentration of $\mathbf{Q}_{\frac{1}{n} \mathbf{X}\mathbf{X}^{\mathrm{T}}}$]\label{lem:concentration-resolvent}
+For $\mathbf{X} \in \mathbb{R}^{p \times n}$ and $z < 0$, let $\mathbf{Q}(z) = \left(\frac{1}{n}\mathbf{X}\mathbf{X}^{\mathrm{T}} - z\mathbf{I}_p\right)^{-1}$. Then we have the following two results
+\begin{align*}
+\mathbf{X} \propto \alpha &\Rightarrow \mathbf{Q}(z) \propto \alpha \left(\sqrt{n|z|^3}(\cdot)/2\right) \\
+\mathbf{X} \mathrel{\overset{\mathbb{E}}{\propto}}_{c} Ce^{-(\cdot/\sigma)^q} &\Rightarrow \mathbf{Q}(z) \in \mathbb{E}\mathbf{Q}(z) \pm 2Ce^{-\left(\sqrt{n|z|^3}(\cdot)/4\sigma\right)^q}
+\end{align*}
+where the concentrations refer to deviations measured in the Frobenius norm, and consequently for the operator norm.
+\end{lemma}
+
+Now, we have the following concentration of measure version of Theorem~\ref{thm:silverstein-bai}.
+\begin{theorem}[Sample covariance of concentrated random vectors]\label{thm:sample-covariance-concentrated-random-vectors}
+Let $ \mathbf{X} = [\mathbf{x}_1, \ldots, \mathbf{x}_n] \propto C e^{-(\cdot)^q / c} $ with respect to the Frobenius norm, with i.i.d. $ \mathbf{x}_i \in \mathbb{R}^p $, and $ z < 0 $. Further assume that $\mathbb{E}\|\mathbf{X}_i\|/\sqrt{p}$, $\tr\boldsymbol{\Phi}/p$ with $\boldsymbol{\Phi} = \frac{1}{p}\mathbb{E}[\mathbf{X}\mathbf{X}^T]$, as well as $p/n$ are all bounded. Then, for all large $n$,
+$$
+\mathbf{Q}(z) \in \bar{\mathbf{Q}}(z) \pm C'e^{-(\sqrt{n}\cdot)^q/c'}
+$$
+with respect to the operator norm, for some $C'', c' > 0$, where
+$$
+\mathbf{Q}(z) = \left(\frac{1}{n} \mathbf{X} \mathbf{X}^T - z \mathbf{I}_p\right)^{-1},\quad\bar{\mathbf{Q}}(z) = \left(\frac{\boldsymbol{\Phi}}{1 + \delta(z)} - z\mathbf{I}_p\right)^{-1}
+$$
+and $\delta(z)$ is the unique positive solution to $\delta(z) = \frac{1}{n} \tr\boldsymbol{\Phi}\mathbf{Q}(z)$.
+\end{theorem}
+Note that this theorem can be naturally extended to all $z \in \mathbb{C} \setminus \mathbb{R}^+$, using additional arguments of complex analytic extension of $\mathbf{Q}(z)$ and $\bar{\mathbf{Q}}(z)$. Moreover, denoting $\delta(z) = -1 - \frac{1}{z\tilde{m}_p(z)}$ and $\boldsymbol{\Phi} = \mathbf{C}$, it recovers the statement in Theorem~\ref{thm:silverstein-bai}. Yet, there are a few key differences to raise between both theorems. First, $\boldsymbol{\Phi} = \frac{1}{p}\mathbb{E}[\mathbf{X}\mathbf{X}^T]$ is not a covariance matrix as the present concentration of measure on $\mathbb{R}^p$ does not impose that $\mathbb{E}[\mathbf{X}] = 0$. Also, the deterministic equivalent $\mathbf{Q}(z)$ comes along with a convergence speed and an exponential tail, which are both more practical than a mere almost sure convergence of specific statistics.
+
+Concentration imposed on the joint matrix $\mathbf{X}$ rather than on each individual vector $\mathbf{x}_i$ may seem demanding. Indeed, since each coordinate projection is 1-Lipschitz, concentration of $\mathbf{X}$ automatically implies that of the $\mathbf{x}_i$'s. That said, such a requirement is at least satisfied when $\mathbf{x}_i = \varphi(\mathbf{y}_i)$, where $\varphi : \mathbb{R}^{p'} \to \mathbb{R}^p$ is a 1-Lipschitz function and $\mathbf{y}_i$ is either distributed as $\mathcal{N}(0, \mathbf{I}_{p'})$ or uniformly on the sphere of radius $\sqrt{p'}$ in $\mathbb{R}^{p'}$. Therefore, the concentration condition on the data matrix $\mathbf{X}$ is not overly restrictive in typical practical settings.
+
+\subsubsection*{Proof of Theorem~\ref{thm:sample-covariance-concentrated-random-vectors}}
+The proof proceeds by successively introducing two deterministic equivalents, as we outline below. We already know from Lemma~\ref{lem:concentration-resolvent} that $\mathbf{Q}(z) \in \mathbb{E}\mathbf{Q}(z) \pm Ce^{-c(\sqrt{n} \cdot)^q}$ for some $C, c > 0$ and it only remains to show that $\|\mathbb{E}\mathbf{Q}(z) - \bar{\mathbf{Q}}(z)\|$ is small.
+
+To this end, we introduce the first deterministic equivalent
+\begin{equation}
+\bar{\bar{\mathbf{Q}}}(z) = \left(\frac{\boldsymbol{\Phi}}{1 + \delta'(z)} - z\mathbf{I}_p\right)^{-1}
+\end{equation}
+where $\delta'(z) = \frac{1}{n}\mathbb{E}[\mathbf{x}^T\mathbf{Q}_-(z)\mathbf{x}] = \frac{1}{n}\text{tr}(\boldsymbol{\Phi}\mathbb{E}\mathbf{Q}_-)$ for $\mathbf{Q}_- \in \mathbb{R}^{p \times p}$ the resolvent of $\frac{1}{n}\mathbf{X}\mathbf{X}^T - \frac{1}{n}\mathbf{x}\mathbf{x}^T$ and $\mathbf{x}$ any column of $\mathbf{X}$. Applying the same ideas as in the proof of Theorem~\ref{thm:marcenko-pastur}, we obtain (we discard the argument $z$'s for readability)
+\begin{align*}
+\mathbb{E}\mathbf{Q} - \bar{\bar{\mathbf{Q}}} &= \mathbb{E}\left[\mathbf{Q}\left(\frac{\boldsymbol{\Phi}}{1 + \delta'} - \frac{1}{n}\mathbf{X}\mathbf{X}^T\right)\right]\bar{\bar{\mathbf{Q}}} \\
+&= \frac{1}{n}\sum_{i=1}^n \mathbb{E}\left[\mathbf{Q}\left(\frac{\boldsymbol{\Phi}}{1 + \delta'} - \mathbf{x}_i\mathbf{x}_i^T\right)\right]\bar{\bar{\mathbf{Q}}}= \mathbb{E}\left[\mathbf{Q}\left(\frac{\boldsymbol{\Phi}}{1 + \delta'} - \mathbf{x}\mathbf{x}^T\right)\right]\bar{\bar{\mathbf{Q}}}
+\end{align*}
+which, along with $\mathbf{Q} = \mathbf{Q}_- - \frac{1}{n}\frac{\mathbf{Q}_-\mathbf{x}\mathbf{x}^T\mathbf{Q}_-}{1 + \frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x}}$ and $\mathbf{Q}\mathbf{x} = \frac{\mathbf{Q}_-\mathbf{x}}{1 + \frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x}}$ from Lemma~\ref{lem:sherman-morrison}, gives $\mathbb{E}\mathbf{Q} - \bar{\bar{\mathbf{Q}}} = \mathbb{E}[\mathbf{E}_1] - \mathbb{E}[\mathbf{E}_2]$, where
+\begin{equation*}
+\mathbf{E}_1 = \mathbf{Q}_-\left(\frac{\boldsymbol{\Phi}}{1 + \delta'} - \frac{\mathbf{x}\mathbf{x}^T}{1 + \frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x}}\right)\bar{\bar{\mathbf{Q}}}, \quad \mathbf{E}_2 = \frac{1}{n(1 + \delta')}\mathbf{Q}_-\mathbf{x}\mathbf{x}^T\mathbf{Q}\boldsymbol{\Phi}\bar{\bar{\mathbf{Q}}}.
+\end{equation*}
+To bound $\|\mathbb{E}\mathbf{Q} - \bar{\bar{\mathbf{Q}}}\|$ it suffices to bound $|\mathbf{a}^T(\mathbb{E}\mathbf{Q} - \bar{\bar{\mathbf{Q}}})\mathbf{a}|$ for any unit norm $\mathbf{a}$. Applying Cauchy-Schwarz inequality twice we have
+\begin{align*}
+|\mathbf{a}^T\mathbb{E}[\mathbf{E}_1]\mathbf{a}| &= \left|\mathbb{E}\left[\mathbf{a}^T\mathbf{Q}_-\mathbf{x}\mathbf{x}^T\bar{\bar{\mathbf{Q}}}\mathbf{a} \cdot \frac{\frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x} - \delta'}{(1 + \delta')\left(1 + \frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x}\right)}\right]\right|\\
+&\leq \mathbb{E}\left[|\mathbf{a}^T\mathbf{Q}_-\mathbf{x}| \cdot |\mathbf{x}^T\bar{\bar{\mathbf{Q}}}\mathbf{a}| \cdot \left|\frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x} - \delta'\right|\right]\\
+&\leq \sqrt{\mathbb{E}\left[|\mathbf{a}^T\mathbf{Q}_-\mathbf{x}|^2 \cdot \left|\frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x} - \delta'\right|\right] \cdot \mathbb{E}\left[|\mathbf{x}^T\bar{\bar{\mathbf{Q}}}\mathbf{a}|^2 \cdot \left|\frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x} - \delta'\right|\right]}\\
+&= O(n^{-\frac{1}{2}})
+\end{align*}
+where we used here: (i) $\mathbf{a}^T\bar{\bar{\mathbf{Q}}}\mathbf{x} \propto Ce^{-(\cdot)^q}$ and $\mathbf{a}^T\mathbf{Q}_-\mathbf{x} \propto Ce^{-c(\cdot)^q}$ (from which $\mathbb{E}[|\mathbf{a}^T\bar{\bar{\mathbf{Q}}}\mathbf{x}|^k] = O(1)$ and $\mathbb{E}[|\mathbf{a}^T\mathbf{Q}_-\mathbf{x}|^k] = O(1)$) and (ii) $\frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x} \in \delta' \pm Ce^{-c(n \cdot)^{q/2}} + Ce^{-c(\sqrt{n} \cdot)^q}$ (from which $\mathbb{E}[|\frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x} - \delta'|^k] = O(n^{-\frac{k}{2}})$). The concentration results (i) and (ii) themselves unfold from the previous generic results on concentration of vectors and bilinear forms. Similarly,
+\begin{equation*}
+|\mathbf{a}^T\mathbb{E}[\mathbf{E}_2]\mathbf{a}| \leq \frac{1}{n}\sqrt{\mathbb{E}[|\mathbf{a}^T\mathbf{Q}_-\mathbf{x}|^2] \cdot \mathbb{E}[|\mathbf{x}^T\mathbf{Q}_-\boldsymbol{\Phi}\bar{\bar{\mathbf{Q}}}\mathbf{a}|^2]} = O(n^{-1}).
+\end{equation*}
+We thus find that $\|\mathbb{E}\mathbf{Q} - \bar{\bar{\mathbf{Q}}}\| = O(n^{-\frac{1}{2}})$. Integrated into $\mathbf{Q}(z) \in \mathbb{E}\mathbf{Q}(z) \pm Ce^{-c(\sqrt{n} \cdot)^q}$, this gives $\mathbf{Q}(z) \in \bar{\bar{\mathbf{Q}}} \pm Ce^{-c(\sqrt{n} \cdot)^q}$.
+
+It thus remains to show similarly that $\|\bar{\mathbf{Q}} - \bar{\bar{\mathbf{Q}}}\|$ is small. Note that
+\begin{equation*}
+\|\bar{\mathbf{Q}} - \bar{\bar{\mathbf{Q}}}\| = \frac{|\delta' - \delta|}{(1 + \delta)(1 + \delta')} \|\bar{\mathbf{Q}}\boldsymbol{\Phi}\bar{\bar{\mathbf{Q}}}\| \leq \frac{|\delta - \delta'|}{|z|}
+\end{equation*}
+and it thus suffices to control $\delta - \delta'$, which, by the implicit form of $\delta$, satisfies
+\begin{align*}
+|\delta - \delta'| &= \frac{1}{n}\left|\tr\boldsymbol{\Phi}(\bar{\mathbf{Q}} - \bar{\bar{\mathbf{Q}}} + \bar{\bar{\mathbf{Q}}} - \mathbb{E}\mathbf{Q} + \mathbb{E}[\mathbf{Q} - \mathbf{Q}_-])\right|\\
+&\leq \frac{1}{n}\left|\tr\boldsymbol{\Phi}(\bar{\mathbf{Q}} - \bar{\bar{\mathbf{Q}}})\right| + \frac{1}{n}\left|\tr\boldsymbol{\Phi}\|\bar{\bar{\mathbf{Q}}} - \mathbb{E}\mathbf{Q}\|\right| + \frac{1}{n}\left|\tr\boldsymbol{\Phi}\|\mathbb{E}[\mathbf{Q} - \mathbf{Q}_-]\|\right|\\
+&\leq \sqrt{\frac{1}{n(1 + \delta)^2}\tr\boldsymbol{\Phi}^2\bar{\mathbf{Q}}^2} \cdot \sqrt{\frac{1}{n(1 + \delta')^2}\tr\boldsymbol{\Phi}^2\bar{\bar{\mathbf{Q}}}^2} \cdot |\delta - \delta'| + O(n^{-\frac{1}{2}})
+\end{align*}
+where we used $\tr\mathbf{A}\mathbf{B} \leq \|\mathbf{B}\| \cdot \text{tr}\mathbf{A}$ for symmetric and nonnegative definite $\mathbf{A} \in \mathbb{R}^{p \times p}$, and $\|\mathbb{E}[\mathbf{Q} - \mathbf{Q}_-]\| = O(n^{-1/2})$, which unfolds from
+\begin{equation*}
+\|\mathbb{E}[\mathbf{Q} - \mathbf{Q}_-]\| = \frac{1}{n}\left\|\mathbb{E}\frac{\mathbf{Q}_-\mathbf{x}\mathbf{x}^T\mathbf{Q}_-}{1 + \frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x}}\right\| = \frac{1}{n}\left\|\frac{\mathbb{E}[\mathbf{Q}_-\boldsymbol{\Phi}\mathbf{Q}_-]}{1 + \delta'}\right\| + O(n^{-\frac{1}{2}}).
+\end{equation*}
+The coefficient of $|\delta - \delta'|$ on the right hand side is strictly less than 1 for all large $n$, and thus $|\delta - \delta'| = O(n^{-\frac{1}{2}})$, which concludes the proof.
+\begin{flushright}
+$\blacksquare$
+\end{flushright}
+
+\bibliographystyle{plainnat}
+\bibliography{ref}
+
+\end{document}
