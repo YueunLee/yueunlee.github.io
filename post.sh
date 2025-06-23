@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
 EOF
 
 # pandoc 변환 (임시파일 생성)
-pandoc main.tex --citeproc --bibliography=ref.bib --mathjax -s --metadata=link-css:/assets/css/style.css --include-after-body=script_footer.html -o temp_main.html
+pandoc main.tex --citeproc --bibliography=ref.bib --mathjax -s --include-after-body=script_footer.html -o temp_main.html
 
 # <header> 태그 삭제
 sed '/<header[^>]*>/,/<\/header>/d' temp_main.html > temp_noheader.html
@@ -48,5 +48,7 @@ cat meta_block.txt temp_noheader.html > "_posts/$OUTFILE"
 
 # 임시 파일 삭제
 rm script_footer.html temp_main.html temp_noheader.html meta_block.txt
+
+python fix.py "_posts/$OUTFILE"
 
 echo "Generated file: _posts/$OUTFILE"

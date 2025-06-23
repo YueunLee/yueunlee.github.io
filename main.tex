@@ -52,15 +52,15 @@ where $E_{\pm} = (1 \pm \sqrt{c})^2$ and $(x)^+ = \max(x, 0)$. This law precisel
 We start with basic definitions:
 
 \begin{definition}[Resolvent]
-For a symmetric matrix $\mathbf{M} \in \mathbb{R}^{n \times n}$, the resolvent $\mathbf{Q}_\mathbf{M}(z)$ is defined, for $z \in \mathbb{C}$ not an eigenvalue of $\mathbf{M}$, as $\mathbf{Q}_\mathbf{M}(z) \coloneqq (\mathbf{M} - z\mathbf{I}_n)^{-1}$.
+For a symmetric matrix $\mathbf{M} \in \mathbb{R}^{n \times n}$, the resolvent $\mathbf{Q}_\mathbf{M}(z)$ is defined, for $z \in \mathbb{C}$ not an eigenvalue of $\mathbf{M}$, as $\mathbf{Q}_\mathbf{M}(z) := (\mathbf{M} - z\mathbf{I}_n)^{-1}$.
 \end{definition}
 
 \begin{definition}[Empirical spectral measure]
-For a symmetric matrix $\mathbf{M} \in \mathbb{R}^{n \times n}$, the empirical spectral measure $\mu_\mathbf{M}$ is defined as $\mu_\mathbf{M} \coloneqq \frac{1}{n} \sum_{i=1}^{n} \delta_{\lambda_i(\mathbf{M})}$, where $\lambda_1(\mathbf{M}), \ldots, \lambda_n(\mathbf{M})$ are the eigenvalues of $\mathbf{M}$.
+For a symmetric matrix $\mathbf{M} \in \mathbb{R}^{n \times n}$, the empirical spectral measure $\mu_\mathbf{M}$ is defined as $\mu_\mathbf{M} := \frac{1}{n} \sum_{i=1}^{n} \delta_{\lambda_i(\mathbf{M})}$, where $\lambda_1(\mathbf{M}), \ldots, \lambda_n(\mathbf{M})$ are the eigenvalues of $\mathbf{M}$.
 \end{definition}
 
 \begin{definition}[Stieltjes transform]
-For a real probability measure $\mu$, the Stieltjes transform $m_\mu(z)$ is defined, for all $z \in \mathbb{C} \setminus \operatorname{supp}(\mu)$, as $m_\mu(z) \coloneqq \int \frac{1}{t - z} \, \mu(dt)$.
+For a real probability measure $\mu$, the Stieltjes transform $m_\mu(z)$ is defined, for all $z \in \mathbb{C} \setminus \operatorname{supp}(\mu)$, as $m_\mu(z) := \int \frac{1}{t - z} \, \mu(dt)$.
 \end{definition}
 
 \begin{theorem}[Inverse Stieltjes transform]
@@ -84,7 +84,7 @@ More generally, for the spectral decomposition $\mathbf{M} = \mathbf{U} \mathbf{
 $$
 \mathbf{U}f(\mathbf{\Lambda}; \Gamma)\mathbf{U}^T = -\frac{1}{2\pi i} \oint_{\Gamma} f(z) \mathbf{Q}_\mathbf{M}(z) \, dz,
 $$
-for $f$ analytic in a neighborhood of $\Gamma$ and its interior $\Gamma^\circ$ and $f(\mathbf{\mathbf{\Lambda}}; \Gamma) \coloneqq \operatorname{diag}(f(\lambda_i(\mathbf{M})) \cdot \mathbf{1}_{\lambda_i(\mathbf{M}) \in \Gamma^\circ})$. This enables the analysis of eigenvector projections. With $\mathbf{U} = [\mathbf{u}_1, \ldots, \mathbf{u}_n]$, we get:
+for $f$ analytic in a neighborhood of $\Gamma$ and its interior $\Gamma^\circ$ and $f(\mathbf{\mathbf{\Lambda}}; \Gamma) := \operatorname{diag}(f(\lambda_i(\mathbf{M})) \cdot \mathbf{1}_{\lambda_i(\mathbf{M}) \in \Gamma^\circ})$. This enables the analysis of eigenvector projections. With $\mathbf{U} = [\mathbf{u}_1, \ldots, \mathbf{u}_n]$, we get:
 $$
 \sum_{\lambda_i(\mathbf{M}) \in \Gamma^\circ} |\mathbf{v}^T \mathbf{u}_i|^2 = -\frac{1}{2\pi i} \oint_{\Gamma} \mathbf{v}^T \mathbf{Q}_\mathbf{M}(z) \mathbf{v} \, dz.
 $$
@@ -216,7 +216,7 @@ F(z) \simeq \left( -z + \frac{1}{1 + \frac{1}{n} \tr \mathbf{Q}(z)} \right) \mat
 $$
 Taking $\mathbf{A} = \mathbf{I}_p$, we deduce that $\frac{1}{p} \tr \bar{\mathbf{Q}}(z) \simeq \frac{1}{p} \tr \mathbf{Q}(z)$, and obtain the expression
 \begin{equation*}
-m(z) \coloneqq \frac{1}{p} \tr \bar{\mathbf{Q}}(z)
+m(z) := \frac{1}{p} \tr \bar{\mathbf{Q}}(z)
 = \frac{1}{p} \tr F^{-1}(z)
 \simeq \frac{1}{-z + \frac{1}{1 + \frac{1}{n} \tr \mathbf{Q}(z)}} \simeq \frac{1}{-z + \frac{1}{1 + \frac{1}{n} \tr \bar{\mathbf{Q}}(z)}}
 = \frac{1}{-z + \frac{1}{1 + \frac{p}{n} m(z)}}.
