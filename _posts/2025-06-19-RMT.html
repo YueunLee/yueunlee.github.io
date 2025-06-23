@@ -1,0 +1,1097 @@
+---
+title: "Random Matrix Theory for High-Dimensional Covariance Estimation: From Classical Results to Concentration of Measure"
+date: 2025-06-19
+---
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Yueun Lee" />
+  <meta name="dcterms.date" content="2025-06-23" />
+  <title>Random Matrix Theory for High-Dimensional Covariance Estimation: From Classical Results to Concentration of Measure</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+      margin-bottom: 0em;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  
+    #refs {
+    counter-reset: ref-counter;
+    list-style: none;
+    padding-left: 0;
+    }
+    #refs li {
+      counter-increment: ref-counter;
+      margin-bottom: 0.5em;
+      position: relative;
+      padding-left: 2em;
+    }
+    #refs li::before {
+      content: "[" counter(ref-counter) "] ";
+      position: absolute;
+      left: 0;
+      color: #333;
+      font-weight: bold;
+    } </style>
+    <link rel="stylesheet" href="style.css" />
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<p>This post provides a comprehensive survey of random matrix theory
+(RMT) techniques for analyzing sample covariance matrices in
+high-dimensional statistical settings. We begin by examining the
+limitations of classical covariance estimation when the dimension <span
+class="math inline">\(p\)</span> is comparable to or exceeds the sample
+size <span class="math inline">\(n\)</span>, where traditional
+asymptotic guarantees fail. We present the foundational Marčenko-Pastur
+law, which characterizes the limiting spectral distribution of sample
+covariance matrices under i.i.d. Gaussian assumptions, and discuss its
+extensions through the Silverstein-Bai theorem to more general
+covariance structures.</p>
+<p>A key focus of this post is the significant generalization achieved
+through concentration of measure theory. We demonstrate how the
+restrictive assumption of entrywise independence in classical RMT can be
+relaxed by requiring only that the data vectors exhibit concentration
+properties. Specifically, we show that concentrated random
+vectors—including those arising from Lipschitz transformations of
+Gaussian vectors—satisfy the key structural properties needed for
+spectral analysis, thereby extending the applicability of RMT to
+realistic data-generating processes in machine learning.</p>
+<p>This survey primarily based on the comprehensive framework
+established in <span class="citation"
+data-cites="couillet2022random">(Couillet and Liao 2022)</span>.</p>
+</header>
+<h1 id="introduction">Introduction</h1>
+<p>Random Matrix Theory provides a versatile framework for analyzing and
+improving classical machine learning methods in high-dimensional
+settings. Consider the following setup: let <span
+class="math inline">\(\mathbf{X} = [\mathbf{x}_1, \dots, \mathbf{x}_n]
+\in \mathbb{R}^{p \times n}\)</span> be a data matrix whose columns
+<span class="math inline">\(\mathbf{x}_i\)</span> are independent
+samples from <span class="math inline">\(\mathcal{N}(0,
+\mathbf{C})\)</span>, and let the maximum likelihood estimator of the
+covariance be <span class="math inline">\(\hat{\mathbf{C}} =
+\frac{1}{n}\mathbf{X}\mathbf{X}^T\)</span>. In the classical regime,
+where <span class="math inline">\(n \to \infty\)</span> with fixed <span
+class="math inline">\(p\)</span>, the law of large numbers implies <span
+class="math inline">\(\|\hat{\mathbf{C}} - \mathbf{C}\|
+\xrightarrow{\mathrm{a.s.}} 0\)</span>, i.e., <span
+class="math inline">\(\hat{\mathbf{C}}\)</span> converges almost surely
+to <span class="math inline">\(\mathbf{C}\)</span> in operator norm.</p>
+<p>Modern datasets, however, often have <span
+class="math inline">\(p\)</span> comparable to or larger than <span
+class="math inline">\(n\)</span>. Suppose <span class="math inline">\(p
+= \mathcal{O}(n^d)\)</span> for some <span class="math inline">\(d &gt;
+0\)</span>. Although concentration inequalities still guarantee <span
+class="math inline">\(\|\hat{\mathbf{C}} - \mathbf{C}\|_{\infty}
+\xrightarrow{\mathrm{a.s.}} 0\)</span>, operator-norm convergence fails
+when <span class="math inline">\(p &gt; n\)</span> since <span
+class="math inline">\(\hat{\mathbf{C}}\)</span> becomes singular and
+cannot approximate a full-rank <span
+class="math inline">\(\mathbf{C}\)</span>. This is critical because many
+statistical procedures (e.g., regression, classification) depend on the
+spectral properties of <span
+class="math inline">\(\hat{\mathbf{C}}\)</span>, and without
+spectral-norm consistency, we lose control over eigenvalues and
+eigenvectors.</p>
+<p>To overcome this, one studies the asymptotic spectral distribution of
+<span class="math inline">\(\hat{\mathbf{C}}\)</span>. A cornerstone
+result is the Marčenko–Pastur law <span class="citation"
+data-cites="Marcenko1967">(Marčenko and Pastur 1967)</span>: when <span
+class="math inline">\(\mathbf{C} = \mathbf{I}_p\)</span> and <span
+class="math inline">\(n, p \to \infty\)</span> with <span
+class="math inline">\(p/n \to c \in (0, \infty)\)</span>, the empirical
+spectral distribution <span class="math inline">\(\mu_p = \frac{1}{p}
+\sum_{i=1}^p \delta_{\lambda_i(\hat{\mathbf{C}})}\)</span> converges to
+the deterministic measure <span class="math display">\[\mu(dx) = (1 -
+c^{-1})_+\,\delta_0(x) + \frac{1}{2\pi c x} \sqrt{(x - E_-)^+ (E_+ -
+x)^+}\,dx,\]</span> where <span class="math inline">\(E_{\pm} = (1 \pm
+\sqrt{c})^2\)</span> and <span class="math inline">\((x)^+ = \max(x,
+0)\)</span>. This law precisely describes the limiting behavior of the
+eigenvalues of <span class="math inline">\(\hat{\mathbf{C}}\)</span>,
+providing a rigorous foundation for high-dimensional analysis.</p>
+<h1 id="preliminaries">Preliminaries</h1>
+<p>We start with basic definitions:</p>
+<div class="definition">
+<p><strong>Definition 1</strong> (Resolvent). <em>For a symmetric matrix
+<span class="math inline">\(\mathbf{M} \in \mathbb{R}^{n \times
+n}\)</span>, the resolvent <span
+class="math inline">\(\mathbf{Q}_\mathbf{M}(z)\)</span> is defined, for
+<span class="math inline">\(z \in \mathbb{C}\)</span> not an eigenvalue
+of <span class="math inline">\(\mathbf{M}\)</span>, as <span
+class="math inline">\(\mathbf{Q}_\mathbf{M}(z) := (\mathbf{M} -
+z\mathbf{I}_n)^{-1}\)</span>.</em></p>
+</div>
+<div class="definition">
+<p><strong>Definition 2</strong> (Empirical spectral measure). <em>For a
+symmetric matrix <span class="math inline">\(\mathbf{M} \in
+\mathbb{R}^{n \times n}\)</span>, the empirical spectral measure <span
+class="math inline">\(\mu_\mathbf{M}\)</span> is defined as <span
+class="math inline">\(\mu_\mathbf{M} := \frac{1}{n}
+\sum_{i=1}^{n} \delta_{\lambda_i(\mathbf{M})}\)</span>, where <span
+class="math inline">\(\lambda_1(\mathbf{M}), \ldots,
+\lambda_n(\mathbf{M})\)</span> are the eigenvalues of <span
+class="math inline">\(\mathbf{M}\)</span>.</em></p>
+</div>
+<div class="definition">
+<p><strong>Definition 3</strong> (Stieltjes transform). <em>For a real
+probability measure <span class="math inline">\(\mu\)</span>, the
+Stieltjes transform <span class="math inline">\(m_\mu(z)\)</span> is
+defined, for all <span class="math inline">\(z \in \mathbb{C} \setminus
+\operatorname{supp}(\mu)\)</span>, as <span
+class="math inline">\(m_\mu(z) := \int \frac{1}{t - z} \,
+\mu(dt)\)</span>.</em></p>
+</div>
+<div class="theorem">
+<p><strong>Theorem 1</strong> (Inverse Stieltjes transform). <em>Let
+<span class="math inline">\(a, b\)</span> be continuity points of the
+probability measure <span class="math inline">\(\mu\)</span>.
+Then:</em></p>
+<ul>
+<li><p><em><span class="math inline">\(\mu([a, b]) = \frac{1}{\pi}
+\lim_{y \downarrow 0} \int_a^b \Im[m_\mu(x + iy)] \,
+dx\)</span>;</em></p></li>
+<li><p><em>If <span class="math inline">\(\mu\)</span> admits a density
+<span class="math inline">\(f\)</span> at <span
+class="math inline">\(x\)</span>, then <span class="math inline">\(f(x)
+= \frac{1}{\pi} \lim_{y \downarrow 0} \Im[m_\mu(x +
+iy)]\)</span>;</em></p></li>
+<li><p><em>If <span class="math inline">\(\mu\)</span> has an isolated
+point mass at <span class="math inline">\(x\)</span>, then <span
+class="math inline">\(\mu(\{x\}) = \lim_{y \downarrow 0} ( -iy m_\mu(x +
+iy))\)</span>.</em></p></li>
+</ul>
+</div>
+<p>These definitions form the basis for analyzing eigenvalue
+distributions. For instance, <span
+class="math display">\[m_{\mu_\mathbf{M}}(z)=\frac1n\sum_{i=1}^{n}\int\frac{\delta_{\lambda_i(\mathbf{M})}(t)}{t-z}=\frac1n\sum_{i=1}^{n}\frac{1}{\lambda_i(\mathbf{M})-z}=\frac1n\mathop{\mathrm{tr}}\mathbf{Q}_\mathbf{M}(z).\]</span>
+Combining this with the inverse Stieltjes transform yields a bridge
+between <span class="math inline">\(\mathbf{Q}_\mathbf{M}\)</span> and
+<span class="math inline">\(\mu_\mathbf{M}\)</span>. Using Cauchy’s
+integral formula, for any contour <span
+class="math inline">\(\Gamma\)</span> and any <span
+class="math inline">\(f\)</span> analytic in a neighborhood of <span
+class="math inline">\(\operatorname{supp}(\mu_\mathbf{M}) \cap
+\Gamma^\circ\)</span>, <span class="math display">\[\frac{1}{n}
+\sum_{\lambda_i(\mathbf{M}) \in \Gamma^\circ} f(\lambda_i(\mathbf{M})) =
+-\frac{1}{2\pi i} \oint_{\Gamma} f(z) m_{\mu_{\mathbf{M}}}(z) \,
+dz.\]</span> More generally, for the spectral decomposition <span
+class="math inline">\(\mathbf{M} = \mathbf{U} \mathbf{\Lambda}
+\mathbf{U}^T\)</span>, we have: <span
+class="math display">\[\mathbf{U}f(\mathbf{\Lambda}; \Gamma)\mathbf{U}^T
+= -\frac{1}{2\pi i} \oint_{\Gamma} f(z) \mathbf{Q}_\mathbf{M}(z) \,
+dz,\]</span> for <span class="math inline">\(f\)</span> analytic in a
+neighborhood of <span class="math inline">\(\Gamma\)</span> and its
+interior <span class="math inline">\(\Gamma^\circ\)</span> and <span
+class="math inline">\(f(\mathbf{\mathbf{\Lambda}}; \Gamma) :=
+\operatorname{diag}(f(\lambda_i(\mathbf{M})) \cdot
+\mathbf{1}_{\lambda_i(\mathbf{M}) \in \Gamma^\circ})\)</span>. This
+enables the analysis of eigenvector projections. With <span
+class="math inline">\(\mathbf{U} = [\mathbf{u}_1, \ldots,
+\mathbf{u}_n]\)</span>, we get: <span
+class="math display">\[\sum_{\lambda_i(\mathbf{M}) \in \Gamma^\circ}
+|\mathbf{v}^T \mathbf{u}_i|^2 = -\frac{1}{2\pi i} \oint_{\Gamma}
+\mathbf{v}^T \mathbf{Q}_\mathbf{M}(z) \mathbf{v} \, dz.\]</span> Thus,
+the resolvent <span class="math inline">\(\mathbf{Q}_\mathbf{M}\)</span>
+captures scalar observations of the eigenspectrum through linear
+functionals: <span
+class="math inline">\(f(\lambda_i(\mathbf{M}))\)</span> and <span
+class="math inline">\(|\mathbf{v}^T \mathbf{u}_i|\)</span> are
+accessible from <span class="math inline">\(\frac{1}{n}
+\mathop{\mathrm{tr}}\mathbf{Q}_\mathbf{M}\)</span> and <span
+class="math inline">\(\mathbf{v}^T \mathbf{Q}_\mathbf{M}
+\mathbf{v}\)</span>, respectively.</p>
+<p>Early approaches primarily focused on the limit of <span
+class="math inline">\(m_{\mu_\mathbf{M}}(z)\)</span>. However, such a
+limit exists only for highly regular matrices <span
+class="math inline">\(\mathbf{M}\)</span>. Moreover, <span
+class="math inline">\(m_{\mu_\mathbf{M}}(z) = \frac{1}{n}
+\mathop{\mathrm{tr}}\mathbf{Q}_\mathbf{M}\)</span> discards subspace
+information about eigenvectors encoded in the resolvent <span
+class="math inline">\(\mathbf{Q}_\mathbf{M}\)</span>. To address this,
+modern methods introduce deterministic equivalents—matrices that yield
+asymptotically the same scalar observables as random ones.</p>
+<div id="lem:deterministic-equivalent" class="definition">
+<p><strong>Definition 4</strong> (Deterministic Equivalent). <em>We say
+that <span class="math inline">\(\bar{\mathbf{Q}} \in \mathbb{R}^{n
+\times n}\)</span> is a deterministic equivalent for the symmetric
+random matrix <span class="math inline">\(\mathbf{Q} \in \mathbb{R}^{n
+\times n}\)</span> if, for any deterministic matrix <span
+class="math inline">\(\mathbf{A}\)</span> with <span
+class="math inline">\(\|\mathbf{A}\| = 1\)</span> and vectors <span
+class="math inline">\(\mathbf{a}, \mathbf{b}\)</span> with <span
+class="math inline">\(\|\mathbf{a}\|_2 = \|\mathbf{b}\|_2 = 1\)</span>,
+as <span class="math inline">\(n \to \infty\)</span>, the following
+hold: <span class="math display">\[\frac{1}{n}
+\mathop{\mathrm{tr}}\mathbf{A}(\mathbf{Q} - \bar{\mathbf{Q}})
+\xrightarrow{a.s.} 0, \quad a^T(\mathbf{Q} - \bar{\mathbf{Q}})b
+\xrightarrow{a.s.} 0.\]</span> We write <span
+class="math inline">\(\mathbf{Q} \leftrightarrow
+\bar{\mathbf{Q}}\)</span>.</em></p>
+</div>
+<p>The notion of equivalence can be extended to random matrices by
+requiring <span class="math inline">\(\lVert \mathbb{E}[\mathbf{Q} -
+\bar{\mathbf{Q}}] \rVert \to 0\)</span>, making it an equivalence
+relation over both deterministic and random matrices.</p>
+<h1 id="the-marčenkopastur-law">The Marčenko–Pastur Law</h1>
+<p>First, we state some useful lemmas:</p>
+<div id="lem:sherman-morrison" class="lemma">
+<p><strong>Lemma 1</strong> (Sherman–Morrison). <em>Let <span
+class="math inline">\(\mathbf{A} \in \mathbb{R}^{p \times p}\)</span> be
+invertible, and <span class="math inline">\(\mathbf{u}, \mathbf{v} \in
+\mathbb{R}^p\)</span>. Then <span class="math inline">\(\mathbf{A} +
+uv^\top\)</span> is invertible if and only if <span
+class="math inline">\(1 + \mathbf{v}^\top \mathbf{A}^{-1} \mathbf{u}
+\neq 0\)</span>, and in this case <span
+class="math display">\[(\mathbf{A} + uv^\top)^{-1} = \mathbf{A}^{-1} -
+\frac{\mathbf{A}^{-1} \mathbf{u} \mathbf{v}^\top \mathbf{A}^{-1}}{1 +
+\mathbf{v}^\top \mathbf{A}^{-1} \mathbf{u}}, \quad
+(\mathbf{A} + uv^\top)^{-1} \mathbf{u} = \frac{\mathbf{A}^{-1}
+\mathbf{u}}{1 + \mathbf{v}^\top \mathbf{A}^{-1}
+\mathbf{u}}.\]</span></em></p>
+</div>
+<p>Applying this lemma with <span class="math inline">\(\mathbf{A} =
+\mathbf{M} - z \mathbf{I}_p\)</span> for <span class="math inline">\(z
+\in \mathbb{C}\)</span> and <span class="math inline">\(\mathbf{v} =
+\tau \mathbf{u}\)</span> for <span class="math inline">\(\tau \in
+\mathbb{R}\)</span>, we obtain the following rank-1 perturbation result
+for the resolvent of <span
+class="math inline">\(\mathbf{M}\)</span>.</p>
+<div id="lem:rank-1-perturbation" class="lemma">
+<p><strong>Lemma 2</strong> (Rank-1 perturbation lemma). <em>Let <span
+class="math inline">\(\mathbf{M}, \mathbf{A} \in \mathbb{R}^{p \times
+p}\)</span> be symmetric matrices, <span
+class="math inline">\(\mathbf{u} \in \mathbb{R}^p\)</span>, <span
+class="math inline">\(\tau \in \mathbb{R}\)</span>, and <span
+class="math inline">\(z \in \mathbb{C} \setminus \mathbb{R}\)</span>.
+Then <span class="math display">\[\left| \mathop{\mathrm{tr}}\mathbf{A}
+(\mathbf{M} + \tau \mathbf{u} \mathbf{u}^\top - z \mathbf{I}_p)^{-1} -
+\mathop{\mathrm{tr}}\mathbf{A} (\mathbf{M} - z \mathbf{I}_p)^{-1}
+\right| \leq \frac{\|\mathbf{A}\|}{|\Im(z)|}.\]</span></em></p>
+</div>
+<p>If the entries of a random vector <span
+class="math inline">\(\mathbf{x}\)</span> are independent with zero mean
+and unit variance, then <span
+class="math display">\[\mathbb{E}[\mathbf{x}^\top \mathbf{A} \mathbf{x}]
+= \mathop{\mathrm{tr}}\mathbf{A}.\]</span> Moreover, since <span
+class="math inline">\(\operatorname{Var}[\mathbf{x}^\top \mathbf{A}
+\mathbf{x} / p] = O(p^{-1})\)</span>, it follows that <span
+class="math display">\[\frac{1}{p} \mathbf{x}^\top \mathbf{A} \mathbf{x}
+- \frac{1}{p} \mathop{\mathrm{tr}}\mathbf{A} \xrightarrow{p} 0,\]</span>
+where the convergence is in probability. However, almost sure
+convergence requires stronger moment assumptions; under light-tailed
+entries, the following lemma ensures it and is key for deriving
+deterministic equivalents.</p>
+<div id="lem:trace" class="lemma">
+<p><strong>Lemma 3</strong> (Trace lemma). <em>Let <span
+class="math inline">\(\mathbf{x} \in \mathbb{R}^p\)</span> have
+independent entries <span class="math inline">\(\mathbf{x}_i\)</span>
+with zero mean, unit variance, and bounded <span
+class="math inline">\(K\)</span>-th moment, i.e., <span
+class="math inline">\(\mathbb{E}[|\mathbf{x}_i|^K] \leq \nu_K\)</span>
+for some <span class="math inline">\(K \ge 1\)</span>. Then, for any
+matrix <span class="math inline">\(\mathbf{A} \in \mathbb{R}^{p \times
+p}\)</span> and integer <span class="math inline">\(k \ge 1\)</span>,
+<span class="math display">\[\mathbb{E}\left[|\mathbf{x}^\top \mathbf{A}
+\mathbf{x} - \mathop{\mathrm{tr}}\mathbf{A}|^k \right] \leq C_k \left[
+(\nu_4 \mathop{\mathrm{tr}}(\mathbf{A} \mathbf{A}^\top))^{k/2} +
+\nu_{2k} \mathop{\mathrm{tr}}(\mathbf{A} \mathbf{A}^\top)^{k/2}
+\right],\]</span> where <span class="math inline">\(C_k &gt; 0\)</span>
+is a constant independent of <span class="math inline">\(p\)</span>. In
+particular, if <span class="math inline">\(\|\mathbf{A}\| \leq
+1\)</span> and the entries of <span
+class="math inline">\(\mathbf{x}\)</span> have bounded eighth moments,
+then <span class="math display">\[\mathbb{E} \left[ (\mathbf{x}^\top
+\mathbf{A} \mathbf{x} - \mathop{\mathrm{tr}}\mathbf{A})^4 \right] \leq C
+p^2\]</span> for some <span class="math inline">\(C &gt; 0\)</span>
+independent of <span class="math inline">\(p\)</span>, and consequently,
+as <span class="math inline">\(p \to \infty\)</span>, <span
+class="math display">\[\frac{1}{p} \mathbf{x}^\top \mathbf{A} \mathbf{x}
+- \frac{1}{p} \mathop{\mathrm{tr}}\mathbf{A} \xrightarrow{\text{a.s.}}
+0.\]</span></em></p>
+</div>
+<div class="notation">
+<p><strong>Notation 1</strong>. <em>Let <span
+class="math inline">\(\mathcal{A} \subset \mathbb{C}\)</span>, <span
+class="math inline">\(z \in \mathcal{A}\)</span>, and <span
+class="math inline">\(m \in \mathbb{C}\)</span>. Define: <span
+class="math display">\[\begin{aligned}
+\mathcal{Z}(\mathcal{A}) = \{ (z, m) \in \mathcal{A} \times \mathbb{C}
+\mid &amp; (z &lt; \inf(\mathcal{A}^c \cap \mathbb{R}) \text{ and } m
+&gt; 0) \\
+&amp; \text{or } (z &gt; \sup(\mathcal{A}^c \cap \mathbb{R}) \text{ and
+} m &lt; 0) \\
+&amp; \text{or } (\Im[z] \cdot \Im[m] &gt; 0 \text{ and } m \notin
+\mathbb{R}) \}.
+\end{aligned}\]</span></em></p>
+</div>
+<p>The set <span class="math inline">\(\mathcal{Z}(\mathcal{A})\)</span>
+generalizes valid Stieltjes transform pairs <span
+class="math inline">\((z, m_\mu(z))\)</span> for <span
+class="math inline">\(z \in \mathbb{C} \setminus
+\operatorname{supp}(\mu)\)</span>. It is introduced to ensure uniqueness
+by restricting solutions to this set.</p>
+<div id="thm:marcenko-pastur" class="theorem">
+<p><strong>Theorem 2</strong> (Marčenko and Pastur, 1967). <em>Let <span
+class="math inline">\(\mathbf{X} \in \mathbb{R}^{p \times n}\)</span>
+with i.i.d. columns <span class="math inline">\(\mathbf{x}_i\)</span>
+whose entries are independent with zero mean, unit variance, and satisfy
+a light-tail condition. Let <span class="math inline">\(\mathbf{Q}(z) =
+\left(\frac{1}{n} \mathbf{X}\mathbf{X}^T -
+z\mathbf{I}_p\right)^{-1}\)</span> denote the resolvent of <span
+class="math inline">\(\frac{1}{n} \mathbf{X}\mathbf{X}^T\)</span>. Then,
+as <span class="math inline">\(n, p \to \infty\)</span> with <span
+class="math inline">\(p/n \to c \in (0, \infty)\)</span>, we have: <span
+class="math display">\[\mathbf{Q}(z) \leftrightarrow \bar{\mathbf{Q}}(z)
+:= m(z) \mathbf{I}_p,\]</span> where <span class="math inline">\((z,
+m(z)) \in \mathcal{Z}(\mathbb{C} \setminus [(1-\sqrt{c})^2,
+(1+\sqrt{c})^2])\)</span> is the unique solution to <span
+class="math display">\[z c m^2(z) - (1 - c - z) m(z) + 1 = 0.\]</span>
+The measure corresponding to m(z) via the inverse Stieltjes transform
+admits a closed-form expression: <span class="math display">\[\mu(dx) =
+(1 - c^{-1})^+ \delta_0(dx) + \frac{1}{2 \pi c x} \sqrt{(x - E_-)^+ (E_+
+- x)^+} \, dx,\]</span> where <span class="math inline">\(E_\pm = (1 \pm
+\sqrt{c})^2\)</span> and <span class="math inline">\((x)^+ = \max(x,
+0)\)</span>. Hence, the empirical spectral distribution <span
+class="math inline">\(\mu_{\frac{1}{n} \mathbf{X}
+\mathbf{X}^\top}\)</span> converges weakly almost surely to <span
+class="math inline">\(\mu\)</span>. This measure is known as the
+Marčenko–Pastur distribution.</em></p>
+</div>
+<h3 class="unnumbered" id="proof-of-theorem-thmmarcenko-pastur">Proof of
+Theorem <a href="#thm:marcenko-pastur" data-reference-type="ref"
+data-reference="thm:marcenko-pastur">2</a></h3>
+<p>Instead of providing a rigorous proof, we sketch a heuristic
+derivation, largely following Bai and Silverstein. Assume <span
+class="math inline">\(\bar{\mathbf{Q}}(z) = F^{-1}(z)\)</span>, where
+<span class="math inline">\(F(z)\)</span> is a matrix to be determined.
+We begin with <span class="math display">\[\begin{aligned}
+\mathbf{Q}(z) - \bar{\mathbf{Q}}(z)
+&amp;= \mathbf{Q}(z) \left( F(z) + z \mathbf{I}_p - \frac{1}{n}
+\mathbf{X} \mathbf{X}^\top \right) \bar{\mathbf{Q}}(z) \\
+&amp;= \mathbf{Q}(z) \left( F(z) + z \mathbf{I}_p - \frac{1}{n}
+\sum_{i=1}^n \mathbf{x}_i \mathbf{x}_i^\top \right) \bar{\mathbf{Q}}(z).
+\end{aligned}\]</span> To ensure that <span
+class="math inline">\(\bar{\mathbf{Q}}(z)\)</span> is a deterministic
+equivalent of <span class="math inline">\(\mathbf{Q}(z)\)</span>, it
+suffices to show that for any deterministic matrix <span
+class="math inline">\(\mathbf{A}\)</span> with <span
+class="math inline">\(\|\mathbf{A}\| = 1\)</span>, <span
+class="math display">\[\frac{1}{p} \mathop{\mathrm{tr}}\left[ \mathbf{A}
+\left( \mathbf{Q}(z) - \bar{\mathbf{Q}}(z) \right) \right]
+\xrightarrow{\text{a.s.}} 0.\]</span> This expression can be rewritten
+as <span class="math display">\[\frac{1}{p} \mathop{\mathrm{tr}}\left[
+(F(z) + z \mathbf{I}_p) \bar{\mathbf{Q}}(z) \mathbf{A} \mathbf{Q}(z)
+\right]
+- \frac{1}{n} \sum_{i=1}^n \frac{1}{p} \mathbf{x}_i^\top
+\bar{\mathbf{Q}}(z) \mathbf{A} \mathbf{Q}(z) \mathbf{x}_i
+\xrightarrow{\text{a.s.}} 0.\]</span> Using Lemma <a
+href="#lem:sherman-morrison" data-reference-type="ref"
+data-reference="lem:sherman-morrison">1</a>, we have <span
+class="math display">\[\mathbf{Q}(z) \mathbf{x}_i =
+\frac{\mathbf{Q}_{-i}(z) \mathbf{x}_i}{1 + \frac{1}{n} \mathbf{x}_i^\top
+\mathbf{Q}_{-i}(z) \mathbf{x}_i},\]</span> where <span
+class="math display">\[\mathbf{Q}_{-i}(z) := \left( \frac{1}{n}
+\mathbf{X}\mathbf{X}^\top - \frac{1}{n} \mathbf{x}_i \mathbf{x}_i^\top -
+z \mathbf{I}_p \right)^{-1}\]</span> is independent of <span
+class="math inline">\(\mathbf{x}_i\)</span>. Applying Lemma <a
+href="#lem:trace" data-reference-type="ref"
+data-reference="lem:trace">3</a> conditionally, we approximate <span
+class="math display">\[\frac{1}{p} \mathbf{x}_i^\top \bar{\mathbf{Q}}(z)
+\mathbf{A} \mathbf{Q}(z) \mathbf{x}_i = \frac{\frac{1}{p}
+\mathbf{x}_i^\top \bar{\mathbf{Q}}(z) \mathbf{A} \mathbf{Q}_{-i}(z)
+\mathbf{x}_i}{1 + \frac{1}{n} \mathbf{x}_i^\top \mathbf{Q}_{-i}(z)
+\mathbf{x}_i}\simeq \frac{\frac{1}{p}
+\mathop{\mathrm{tr}}\bar{\mathbf{Q}}(z) \mathbf{A} \mathbf{Q}_{-i}(z)}{1
++ \frac{1}{n} \mathop{\mathrm{tr}}\mathbf{Q}_{-i}(z)}.\]</span> Since
+<span class="math inline">\(\mathbf{Q}(z)\)</span> and <span
+class="math inline">\(\mathbf{Q}_{-i}(z)\)</span> differ by a rank-one
+perturbation, Lemma <a href="#lem:rank-1-perturbation"
+data-reference-type="ref" data-reference="lem:rank-1-perturbation">2</a>
+implies that <span class="math display">\[\frac{1}{p}
+\mathop{\mathrm{tr}}\mathbf{Q}(z) \simeq \frac{1}{p}
+\mathop{\mathrm{tr}}\mathbf{Q}_{-i}(z).\]</span> Hence, we have <span
+class="math display">\[\frac{1}{p} \mathbf{x}_i^\top \bar{\mathbf{Q}}(z)
+\mathbf{A} \mathbf{Q}(z) \mathbf{x}_i \simeq \frac{\frac{1}{p}
+\mathop{\mathrm{tr}}\bar{\mathbf{Q}}(z) \mathbf{A} \mathbf{Q}(z)}{1 +
+\frac{1}{n} \mathop{\mathrm{tr}}\mathbf{Q}(z)}.\]</span> Substituting
+back into the previous expression, we obtain <span
+class="math display">\[\frac{1}{p} \mathop{\mathrm{tr}}(F(z) + z
+\mathbf{I}_p) \bar{\mathbf{Q}}(z) \mathbf{A} \mathbf{Q}(z)
+\simeq \frac{\frac{1}{p} \mathop{\mathrm{tr}}\bar{\mathbf{Q}}(z)
+\mathbf{A} \mathbf{Q}(z)}{1 + \frac{1}{n}
+\mathop{\mathrm{tr}}\mathbf{Q}(z)}.\]</span> As the right-hand side
+summation over <span class="math inline">\(i\)</span> no longer depends
+on <span class="math inline">\(i\)</span>, the sum symbol vanishes.
+Thus, to ensure this approximation holds, we must have <span
+class="math display">\[F(z) \simeq \left( -z + \frac{1}{1 + \frac{1}{n}
+\mathop{\mathrm{tr}}\mathbf{Q}(z)} \right) \mathbf{I}_p.\]</span> Taking
+<span class="math inline">\(\mathbf{A} = \mathbf{I}_p\)</span>, we
+deduce that <span class="math inline">\(\frac{1}{p}
+\mathop{\mathrm{tr}}\bar{\mathbf{Q}}(z) \simeq \frac{1}{p}
+\mathop{\mathrm{tr}}\mathbf{Q}(z)\)</span>, and obtain the expression
+<span class="math display">\[m(z) := \frac{1}{p}
+\mathop{\mathrm{tr}}\bar{\mathbf{Q}}(z)
+= \frac{1}{p} \mathop{\mathrm{tr}}F^{-1}(z)
+\simeq \frac{1}{-z + \frac{1}{1 + \frac{1}{n}
+\mathop{\mathrm{tr}}\mathbf{Q}(z)}} \simeq \frac{1}{-z + \frac{1}{1 +
+\frac{1}{n} \mathop{\mathrm{tr}}\bar{\mathbf{Q}}(z)}}
+= \frac{1}{-z + \frac{1}{1 + \frac{p}{n} m(z)}}.\]</span> Passing to the
+limit <span class="math inline">\(p, n \to \infty\)</span> with <span
+class="math inline">\(p/n \to c\)</span> yields the quadratic equation
+<span class="math display">\[z c m^2(z) - (1 - c - z) m(z) + 1 =
+0,\]</span> which characterizes the Stieltjes transform of the
+Marčenko–Pastur distribution <span
+class="math inline">\(\mu\)</span>.</p>
+<div class="flushright">
+<p><span class="math inline">\(\blacksquare\)</span></p>
+</div>
+<p>The Marčenko–Pastur law characterizes the asymptotic spectral
+distribution of sample covariance matrices under fairly general
+conditions. Moreover, the following theorem by Silverstein and Bai
+relaxes some assumptions by allowing general covariance structures with
+bounded operator norm:</p>
+<div id="thm:silverstein-bai" class="theorem">
+<p><strong>Theorem 3</strong> (Silverstein and Bai, 1995). <em>Let <span
+class="math inline">\(\mathbf{X} = \mathbf{C}^{1/2} \mathbf{Z} \in
+\mathbb{R}^{p \times n}\)</span> where <span
+class="math inline">\(\mathbf{C} \in \mathbb{R}^{p \times p}\)</span> is
+symmetric positive semidefinite with bounded operator norm, i.e., <span
+class="math inline">\(\limsup_p \|\mathbf{C}\| &lt; \infty\)</span>, and
+<span class="math inline">\(\mathbf{Z} \in \mathbb{R}^{p \times
+n}\)</span> has independent entries with zero mean and unit variance
+satisfying some light tail conditions. Then, as <span
+class="math inline">\(n,p \to \infty\)</span> with <span
+class="math inline">\(p/n\to c \in (0, \infty)\)</span>, letting <span
+class="math inline">\(\mathbf{Q}(z) = \left(\frac{1}{n} \mathbf{X}
+\mathbf{X}^T - z \mathbf{I}_p\right)^{-1}\)</span>, we have <span
+class="math display">\[\mathbf{Q}(z) \leftrightarrow \bar{\mathbf{Q}}(z)
+= -\frac{1}{z} \left( \mathbf{I}_p + \tilde{m}_p(z) \mathbf{C}
+\right)^{-1},\]</span> where the pair <span class="math inline">\((z,
+\tilde{m}_p(z))\)</span> is the unique solution in <span
+class="math inline">\(\mathcal{Z}(\mathbb{C} \setminus
+\mathbb{R}^+)\)</span> of <span class="math display">\[\tilde{m}_p(z) =
+\left( -z + \frac{1}{n} \mathop{\mathrm{tr}}\mathbf{C} \left(
+\mathbf{I}_p + \tilde{m}_p(z) \mathbf{C} \right)^{-1}
+\right)^{-1}.\]</span> Moreover, if the empirical spectral measure <span
+class="math inline">\(\mu_\mathbf{C}\)</span> of <span
+class="math inline">\(\mathbf{C}\)</span> converges to a limiting
+measure <span class="math inline">\(\nu\)</span> as <span
+class="math inline">\(p \to \infty\)</span>, then the empirical spectral
+measure of <span class="math inline">\(\frac{1}{n} \mathbf{X}
+\mathbf{X}^T\)</span> converges almost surely to <span
+class="math inline">\(\mu\)</span>, where <span
+class="math inline">\(\mu\)</span> is the unique measure having
+Stieltjes transform <span class="math inline">\(m(z)\)</span> with <span
+class="math display">\[m(z) = \frac{1}{c} \tilde{m}(z)
++\frac{1-c}{cz}.\]</span></em></p>
+</div>
+<p>However, despite its generality, the approach is limited in many
+practical scenarios, as decomposing the data matrix <span
+class="math inline">\(\mathbf{X}\)</span> into the form <span
+class="math inline">\(\mathbf{C}^{1/2} \mathbf{Z}\)</span>, where <span
+class="math inline">\(\mathbf{Z}\)</span> consists of independent
+components, is often infeasible due to complex dependencies or
+structural constraints in the data. This limits the applicability of
+classical random matrix results in such settings, which has led to the
+use of probabilistic tools such as concentration of measure.</p>
+<h1 id="concentration-of-measure">Concentration of measure</h1>
+<p>As discussed above, the classical model described in Theorem <a
+href="#thm:silverstein-bai" data-reference-type="ref"
+data-reference="thm:silverstein-bai">3</a> is highly restrictive: each
+observation <span class="math inline">\(\mathbf{x}_i\)</span> must be
+expressible as <span class="math inline">\(\mathbf{x}_i =
+\mathbf{C}^{1/2} \mathbf{z}_i\)</span>, where <span
+class="math inline">\(\mathbf{z}_i\)</span> is a random vector with
+independent entries. This factorization is particularly tractable in the
+Gaussian setting, where <span class="math inline">\(\mathbf{z}_i \sim
+\mathcal{N}(0, \mathbf{I}_p)\)</span>, resulting in <span
+class="math inline">\(\mathbf{x}_i \sim \mathcal{N}(0,
+\mathbf{C})\)</span>. However, many multivariate distributions of
+practical interest do not admit such a decomposition. More critically,
+real-world data encountered in machine learning often cannot be linearly
+whitened into vectors with independent entries, rendering the
+assumptions behind Theorem <a href="#thm:silverstein-bai"
+data-reference-type="ref" data-reference="thm:silverstein-bai">3</a>
+inadequate in these settings.</p>
+<p>This modeling limitation was significantly relaxed by <span
+class="citation" data-cites="elkaroui2009">El Karoui (2009)</span> and
+<span class="citation" data-cites="pajor2009">Pajor and Pastur
+(2009)</span>, who showed that the proof of Theorem <a
+href="#thm:silverstein-bai" data-reference-type="ref"
+data-reference="thm:silverstein-bai">3</a> hinges not on the entrywise
+independence of the <span class="math inline">\(\mathbf{z}_i\)</span>,
+but rather on two key structural properties: (i) the independence across
+the samples <span class="math inline">\(\mathbf{x}_i\)</span> (even if
+the entries of each vector are dependent), and (ii) the convergence
+<span class="math display">\[\frac{1}{n} \mathbf{x}_i^\top
+\mathbf{Q}_{-i}(z) \mathbf{x}_i - \frac{1}{n}
+\mathop{\mathrm{tr}}\mathbf{Q}_{-i} \mathbf{C} \to 0,\]</span> in some
+probabilistic sense, where <span
+class="math inline">\(\mathbf{Q}_{-i}(z) = \left( \frac{1}{n}
+\mathbf{X}\mathbf{X}^\top - \frac{1}{n} \mathbf{x}_i \mathbf{x}_i^\top -
+z \mathbf{I}_p \right)^{-1}\)</span>. Notably, this convergence holds
+not only when the entries of <span
+class="math inline">\(\mathbf{z}_i\)</span> are standard i.i.d., but
+also when <span class="math inline">\(\mathbf{x}_i\)</span> is a
+<em>concentrated random vector</em> <span class="citation"
+data-cites="elkaroui2009">(El Karoui 2009)</span>, thereby significantly
+extending the applicability of Theorem <a href="#thm:silverstein-bai"
+data-reference-type="ref"
+data-reference="thm:silverstein-bai">3</a>.</p>
+<p>This extension is especially relevant in modern data settings, where
+realistic observations often take the form <span
+class="math inline">\(f(\mathbf{x})\)</span>, with <span
+class="math inline">\(\mathbf{x} \sim \mathcal{N}(0,
+\mathbf{I}_p)\)</span> and <span class="math inline">\(f : \mathbb{R}^p
+\to \mathbb{R}^q\)</span> a 1-Lipschitz map. Gaussian vectors are known
+to be concentrated, and this property is preserved under Lipschitz
+transformations, so <span class="math inline">\(f(\mathbf{x})\)</span>
+inherits concentration regardless of how intricate or nonlinear the
+dependencies between its entries may be. Crucially, many data generation
+and feature extraction processes in machine learning—such as generative
+models like GANs or inference pipelines based on neural networks—are
+compositions of such Lipschitz mappings. The class of concentrated
+random vectors therefore provides a theoretically principled and
+practically expressive framework to model not only synthetic but also
+real-world data.</p>
+<p>We now formalize the concentration of measure framework that
+underpins this generalization.</p>
+<div class="definition">
+<p><strong>Definition 5</strong> (Concentration of a random variable).
+<em>Let <span class="math inline">\(\alpha : \mathbb{R}^+ \rightarrow
+[0,1]\)</span> be a non-increasing function with <span
+class="math inline">\(\alpha(\infty) = 0\)</span>. A random variable
+<span class="math inline">\(x\)</span> is <span
+class="math inline">\(\alpha\)</span>-concentrated, and we write <span
+class="math inline">\(x \propto \alpha\)</span>, if, for an independent
+copy <span class="math inline">\(x&#39;\)</span> of <span
+class="math inline">\(x\)</span>, and all <span class="math inline">\(t
+&gt; 0\)</span>, <span class="math display">\[\mathbb{P}(|x - x&#39;|
+&gt; t) \leq \alpha(t).\]</span></em></p>
+</div>
+<p>This implies that two independent realizations of <span
+class="math inline">\(x\)</span> cannot be far apart with high
+probability.</p>
+<div class="definition">
+<p><strong>Definition 6</strong> (Concentration around a pivot). <em>Let
+<span class="math inline">\(\alpha : \mathbb{R}^+ \rightarrow
+[0,1]\)</span> be a non-increasing function and <span
+class="math inline">\(a \in \mathbb{R}\)</span>. Then <span
+class="math inline">\(x\)</span> is <span
+class="math inline">\(\alpha\)</span>-concentrated around the pivot
+<span class="math inline">\(a\)</span>, denoted <span
+class="math inline">\(x \in a \pm \alpha\)</span>, if, for all <span
+class="math inline">\(t &gt; 0\)</span>, <span
+class="math display">\[\mathbb{P}(|x - a| &gt; t) \leq
+\alpha(t).\]</span></em></p>
+</div>
+<p>These two notions are not formally equivalent, but we have the
+implication <span class="math display">\[x \propto \alpha \quad
+\Rightarrow \quad x \in M_x \pm 2\alpha \quad \Rightarrow \quad x
+\propto 4\alpha(\cdot / 2),\]</span> where <span
+class="math inline">\(M_x\)</span> is a median of <span
+class="math inline">\(x\)</span>. Moreover, as is easily observed,
+concentrated random vectors are closed under addition, multiplication,
+and mappings by Lipschitz functions.</p>
+<div class="definition">
+<p><strong>Definition 7</strong> (Exponential concentration). <em>A
+random variable <span class="math inline">\(x\)</span> is said to be
+exponentially concentrated if it is <span
+class="math inline">\(\alpha\)</span>-concentrated for some function
+<span class="math inline">\(\alpha(\cdot) = C e^{-\left( \cdot/\sigma
+\right)^q}\)</span>, where <span class="math inline">\(C, \sigma, q &gt;
+0\)</span>.</em></p>
+</div>
+<p>Exponential concentrations are fast and induce a lot of convenient
+properties. In particular, using the formula <span
+class="math inline">\(\mathbb{E}[|x|^k] = \int_0^{\infty}
+\mathbb{P}(|x|^k &gt; t) \, dt\)</span>, it appears that all (absolute)
+moments of exponentially concentrated random variables exist. Moreover,
+if <span class="math inline">\(x\)</span> exponentially concentrates
+around some constant, i.e., <span
+class="math inline">\(\mathbb{P}(|x-M|&gt;t)\le
+Ce^{-(t/\sigma)^q}\)</span>, then <span
+class="math display">\[\left|\mathbb{E}[x] - M\right|\leq \mathbb{E}|x -
+M|=\int_0^\infty \mathbb{P}(|x - M| \ge t) dt\le \int_0^\infty
+Ce^{-c(t/\sigma)^q} dt = C\, \Gamma\left(1/q + 1\right)\sigma.\]</span>
+Hence, if a random variable exponentially concentrates around some
+constant, then up to a change of constant, it also exponentially
+concentrates around its expectation. Similarly, we have the implications
+<span class="math display">\[\begin{aligned}
+x \in a \pm Ce^{-(\cdot/\sigma)^q} &amp;\Rightarrow \forall r \geq q,
+\quad \mathbb{E}[|x - a|^r] \leq C\Gamma(r/q + 1)\sigma^r \\
+&amp;\Rightarrow x \in a \pm Ce^{-(\cdot/\sigma)^q/e}
+\end{aligned}\]</span> Thus, exponential concentration is equivalent to
+controlled growth by <span class="math inline">\(\sigma^r\)</span> of
+all moments <span class="math inline">\(r \geq q\)</span>. This is
+particularly appealing when moments occasionally turn out more
+convenient to deal with than bounds on tail probabilities.</p>
+<p>Random vectors—particularly in high dimensions—tend to avoid their
+statistical means or medians. For example, Gaussian random vectors <span
+class="math inline">\(\mathbf{x} \sim \mathcal{N}(\mathbf{0},
+\mathbf{I}_p)\)</span> have zero mean but concentrate in an <span
+class="math inline">\(O(1)\)</span>-thick shell around the sphere of
+radius <span class="math inline">\(\sqrt{p}\)</span> in <span
+class="math inline">\(\mathbb{R}^p\)</span>. Therefore, the notion of
+concentration cannot be extended to random vectors in an elementwise
+manner. Instead, given a normed vector space <span
+class="math inline">\((E, \| \cdot \|)\)</span>, we say that a random
+vector <span class="math inline">\(\mathbf{x} \in E\)</span> is
+concentrated with respect to a class of functions <span
+class="math inline">\(\mathcal{F} : \mathbb{R}^p \to \mathbb{R}\)</span>
+if, for all <span class="math inline">\(f \in \mathcal{F}\)</span>, the
+scalar random variable <span
+class="math inline">\(f(\mathbf{x})\)</span> is concentrated.</p>
+<div class="definition">
+<p><strong>Definition 8</strong> (Lipschitz concentration). <em>A random
+vector <span class="math inline">\(\mathbf{x} \in E\)</span> is
+Lipschitz <span class="math inline">\(\alpha\)</span>-concentrated with
+respect to the norm <span class="math inline">\(\| \cdot \|\)</span> if,
+for every 1-Lipschitz function <span class="math inline">\(f: E
+\rightarrow \mathbb{R}\)</span>, we have one of the following:</em></p>
+<ul>
+<li><p><em><span class="math inline">\(f(\mathbf{x}) \propto
+\alpha\)</span>, denoted <span class="math inline">\(\mathbf{x} \propto
+\alpha\)</span>;</em></p></li>
+<li><p><em><span class="math inline">\(f(\mathbf{x}) \in M_f \pm
+\alpha\)</span>, denoted <span class="math inline">\(\mathbf{x}
+\mathrel{\overset{M}{\propto}} \alpha\)</span>;</em></p></li>
+<li><p><em><span class="math inline">\(f(\mathbf{x}) \in
+\mathbb{E}[f(\mathbf{x})] \pm \alpha\)</span>, denoted <span
+class="math inline">\(\mathbf{x} \mathrel{\overset{\mathbb{E}}{\propto}}
+\alpha\)</span>,</em></p></li>
+</ul>
+<p><em>where <span class="math inline">\(M_f\)</span> is a median of
+<span class="math inline">\(f(\mathbf{x})\)</span>.</em></p>
+</div>
+<div class="definition">
+<p><strong>Definition 9</strong> (Quasi-convex function). <em>A function
+<span class="math inline">\(f: E \rightarrow \mathbb{R}\)</span> is
+quasi-convex if, for all <span class="math inline">\(t \in
+\mathbb{R}\)</span>, the sublevel sets <span
+class="math inline">\(\{\mathbf{x} \in E \mid f(\mathbf{x}) \leq
+t\}\)</span> are convex. Equivalently, <span
+class="math inline">\(f\)</span> is quasi-convex if for all <span
+class="math inline">\(\mathbf{x}, \mathbf{y} \in E\)</span> and all
+<span class="math inline">\(\lambda \in [0,1]\)</span>, <span
+class="math display">\[f(\lambda \mathbf{x} + (1 - \lambda) \mathbf{y})
+\leq \max\{f(\mathbf{x}), f(\mathbf{y})\}.\]</span></em></p>
+</div>
+<div class="definition">
+<p><strong>Definition 10</strong> (Convex concentration). <em>A vector
+<span class="math inline">\(\mathbf{x} \in E\)</span> is (Lipschitz)
+convexly <span class="math inline">\(\alpha\)</span>-concentrated for
+the norm <span class="math inline">\(\| \cdot \|\)</span> if, for any
+1-Lipschitz and quasi-convex function <span class="math inline">\(f: E
+\rightarrow \mathbb{R}\)</span>, one of the following holds:</em></p>
+<ul>
+<li><p><em><span class="math inline">\(f(\mathbf{x}) \propto
+\alpha\)</span>, denoted <span class="math inline">\(\mathbf{x}
+\propto_{c} \alpha\)</span>;</em></p></li>
+<li><p><em><span class="math inline">\(f(\mathbf{x}) \in M_f \pm
+\alpha\)</span>, denoted <span class="math inline">\(\mathbf{x}
+\mathrel{\overset{M}{\propto}}_{c} \alpha\)</span>;</em></p></li>
+<li><p><em><span class="math inline">\(f(\mathbf{x}) \in
+\mathbb{E}[f(\mathbf{x})] \pm \alpha\)</span>, denoted <span
+class="math inline">\(\mathbf{x}
+\mathrel{\overset{\mathbb{E}}{\propto}}_{c}
+\alpha\)</span>,</em></p></li>
+</ul>
+<p><em>where <span class="math inline">\(M_f\)</span> is a median of
+<span class="math inline">\(f(\mathbf{x})\)</span>.</em></p>
+</div>
+<p>Similarly, these notions are not fully equivalent, but are somehow
+related. For instance, in the case of exponential concentration, <span
+class="math display">\[\mathbf{x}
+\mathrel{\overset{\mathbb{E}}{\propto}} Ce^{-(\cdot/\sigma)^q}
+\Rightarrow \mathbf{x} \mathrel{\overset{\mathbb{E}}{\propto}}_{c}
+Ce^{-(\cdot/\sigma)^q} \Rightarrow \mathbf{x} \in \mathbb{E}[\mathbf{x}]
+\pm e^{-(\cdot/\sigma)^q}.\]</span> For convenience, we refer to such
+vectors as exponentially convexly concentrated.</p>
+<p>To provide a quite general and flexible definition for deterministic
+equivalents, we further restrict the function space.</p>
+<div class="definition">
+<p><strong>Definition 11</strong> (Linear concentration). <em>A random
+vector <span class="math inline">\(\mathbf{x} \in E\)</span> is linearly
+<span class="math inline">\(\alpha\)</span>-concentrated around the
+deterministic equivalent <span
+class="math inline">\(\bar{\mathbf{x}}\)</span> with respect to the norm
+<span class="math inline">\(\| \cdot \|\)</span> in <span
+class="math inline">\(E\)</span>, if, for all unit norm linear
+functional <span class="math inline">\(u : E \to \mathbb{R}\)</span>,
+<span class="math inline">\(u(\mathbf{x}) \in u(\bar{\mathbf{x}}) \pm
+\alpha\)</span>.</em></p>
+</div>
+<p>The most important property of linear concentration is that, if a
+random matrix <span class="math inline">\(\mathbf{A}\)</span> is
+linearly concentrated with respect to the operator norm, then for all
+matrix <span class="math inline">\(\mathbf{A}\in\mathbb{R}^{p\times
+p}\)</span> with <span class="math inline">\(\|\mathbf{A}\| = 1\)</span>
+and vectors <span class="math inline">\(\mathbf{a},
+\mathbf{b}\in\mathbb{R}^{p}\)</span> with <span
+class="math inline">\(\|\mathbf{a}\|_2 = \|\mathbf{b}\|_2 = 1\)</span>,
+<span class="math display">\[\frac{1}{n}
+\mathop{\mathrm{tr}}\mathbf{A}(\mathbf{Q} - \bar{\mathbf{Q}})
+\xrightarrow{p} 0, \quad a^T(\mathbf{Q} - \bar{\mathbf{Q}})b
+\xrightarrow{p} 0,\]</span> and moreover, if the concentration is
+exponential, then the convergence is also almost sure. This result
+implies that the newly defined notion of deterministic equivalents from
+a linear concentration standpoint automatically induces the former
+Definition <a href="#lem:deterministic-equivalent"
+data-reference-type="ref"
+data-reference="lem:deterministic-equivalent">4</a>.</p>
+<p>We now restate the trace lemma in the framework of measure
+concentration. Let <span class="math inline">\(\mathbf{x}\)</span> be a
+random vector that is exponentially convexly concentrated, and let <span
+class="math inline">\(\mathbf{A}\)</span> be a symmetric positive
+semidefinite matrix. Note that every symmetric matrix can be decomposed
+into the sum of its positive semidefinite part and negative semidefinite
+part. Since the mapping <span class="math inline">\(\mathbf{x} \mapsto
+\| \mathbf{A}^{1/2} \mathbf{x} \|\)</span> is both convex and Lipschitz,
+it follows that <span class="math inline">\(\| \mathbf{A}^{1/2}
+\mathbf{x} \|\)</span> is also exponentially convexly concentrated.
+Consequently, the quadratic form <span
+class="math inline">\(\mathbf{x}^{\mathrm{T}} \mathbf{A} \mathbf{x} = \|
+\mathbf{A}^{1/2} \mathbf{x} \|^2\)</span> inherits this concentration
+property. Therefore, <span class="math inline">\(\mathbf{x}^{\mathrm{T}}
+\mathbf{A} \mathbf{x}\)</span> concentrates exponentially around its
+expectation <span
+class="math inline">\(\mathbb{E}[\mathbf{x}^{\mathrm{T}} \mathbf{A}
+\mathbf{x}] = \mathrm{tr}(\mathbb{E}[\mathbf{x} \mathbf{x}^{\mathrm{T}}]
+\mathbf{A})\)</span>, up to a change of constant. This leads to the
+following trace lemma for concentrated vectors.</p>
+<div class="lemma">
+<p><strong>Lemma 4</strong> (Trace lemma for concentrated vectors).
+<em>Let <span class="math inline">\(\mathbf{A} \in \mathbb{R}^{p \times
+p}\)</span> and <span class="math inline">\(\mathbf{x} \in
+\mathbb{R}^p\)</span> such that <span class="math inline">\(\mathbf{x}
+\mathrel{\overset{\mathbb{E}}{\propto}}_{c}
+Ce^{-(\cdot/\sigma)^q}\)</span>. Then, <span
+class="math display">\[\begin{aligned}
+\mathbf{x}^{\mathrm{T}}\mathbf{A}\mathbf{x} \in
+\mathrm{tr}(\mathbb{E}[\mathbf{x}\mathbf{x}^{\mathrm{T}}]\mathbf{A}) \pm
+C&#39; \left(
+e^{-(\cdot/4\sigma\|\mathbf{A}\|\cdot\mathbb{E}[\|\mathbf{x}\|])^q} +
+e^{-(\cdot/2\|\mathbf{A}\|\sigma^2)^{q/2}} \right)
+\end{aligned}\]</span> for some constant <span
+class="math inline">\(C&#39; &gt; 0\)</span> depends only on <span
+class="math inline">\(C\)</span> and <span
+class="math inline">\(q\)</span>.</em></p>
+</div>
+<p>Finally, we have the following concentration for the resolvent.</p>
+<div id="lem:concentration-resolvent" class="lemma">
+<p><strong>Lemma 5</strong> (Concentration of <span
+class="math inline">\(\mathbf{Q}_{\frac{1}{n}
+\mathbf{X}\mathbf{X}^{\mathrm{T}}}\)</span>). <em>For <span
+class="math inline">\(\mathbf{X} \in \mathbb{R}^{p \times n}\)</span>
+and <span class="math inline">\(z &lt; 0\)</span>, let <span
+class="math inline">\(\mathbf{Q}(z) =
+\left(\frac{1}{n}\mathbf{X}\mathbf{X}^{\mathrm{T}} -
+z\mathbf{I}_p\right)^{-1}\)</span>. Then we have the following two
+results <span class="math display">\[\begin{aligned}
+\mathbf{X} \propto \alpha &amp;\Rightarrow \mathbf{Q}(z) \propto \alpha
+\left(\sqrt{n|z|^3}(\cdot)/2\right) \\
+\mathbf{X} \mathrel{\overset{\mathbb{E}}{\propto}}_{c}
+Ce^{-(\cdot/\sigma)^q} &amp;\Rightarrow \mathbf{Q}(z) \in
+\mathbb{E}\mathbf{Q}(z) \pm
+2Ce^{-\left(\sqrt{n|z|^3}(\cdot)/4\sigma\right)^q}
+\end{aligned}\]</span> where the concentrations refer to deviations
+measured in the Frobenius norm, and consequently for the operator
+norm.</em></p>
+</div>
+<p>Now, we have the following concentration of measure version of
+Theorem <a href="#thm:silverstein-bai" data-reference-type="ref"
+data-reference="thm:silverstein-bai">3</a>.</p>
+<div id="thm:sample-covariance-concentrated-random-vectors"
+class="theorem">
+<p><strong>Theorem 4</strong> (Sample covariance of concentrated random
+vectors). <em>Let <span class="math inline">\(\mathbf{X} =
+[\mathbf{x}_1, \ldots, \mathbf{x}_n] \propto C e^{-(\cdot)^q /
+c}\)</span> with respect to the Frobenius norm, with i.i.d. <span
+class="math inline">\(\mathbf{x}_i \in \mathbb{R}^p\)</span>, and <span
+class="math inline">\(z &lt; 0\)</span>. Further assume that <span
+class="math inline">\(\mathbb{E}\|\mathbf{X}_i\|/\sqrt{p}\)</span>,
+<span
+class="math inline">\(\mathop{\mathrm{tr}}\boldsymbol{\Phi}/p\)</span>
+with <span class="math inline">\(\boldsymbol{\Phi} =
+\frac{1}{p}\mathbb{E}[\mathbf{X}\mathbf{X}^T]\)</span>, as well as <span
+class="math inline">\(p/n\)</span> are all bounded. Then, for all large
+<span class="math inline">\(n\)</span>, <span
+class="math display">\[\mathbf{Q}(z) \in \bar{\mathbf{Q}}(z) \pm
+C&#39;e^{-(\sqrt{n}\cdot)^q/c&#39;}\]</span> with respect to the
+operator norm, for some <span class="math inline">\(C&#39;&#39;, c&#39;
+&gt; 0\)</span>, where <span class="math display">\[\mathbf{Q}(z) =
+\left(\frac{1}{n} \mathbf{X} \mathbf{X}^T - z
+\mathbf{I}_p\right)^{-1},\quad\bar{\mathbf{Q}}(z) =
+\left(\frac{\boldsymbol{\Phi}}{1 + \delta(z)} -
+z\mathbf{I}_p\right)^{-1}\]</span> and <span
+class="math inline">\(\delta(z)\)</span> is the unique positive solution
+to <span class="math inline">\(\delta(z) = \frac{1}{n}
+\mathop{\mathrm{tr}}\boldsymbol{\Phi}\mathbf{Q}(z)\)</span>.</em></p>
+</div>
+<p>Note that this theorem can be naturally extended to all <span
+class="math inline">\(z \in \mathbb{C} \setminus \mathbb{R}^+\)</span>,
+using additional arguments of complex analytic extension of <span
+class="math inline">\(\mathbf{Q}(z)\)</span> and <span
+class="math inline">\(\bar{\mathbf{Q}}(z)\)</span>. Moreover, denoting
+<span class="math inline">\(\delta(z) = -1 -
+\frac{1}{z\tilde{m}_p(z)}\)</span> and <span
+class="math inline">\(\boldsymbol{\Phi} = \mathbf{C}\)</span>, it
+recovers the statement in Theorem <a href="#thm:silverstein-bai"
+data-reference-type="ref" data-reference="thm:silverstein-bai">3</a>.
+Yet, there are a few key differences to raise between both theorems.
+First, <span class="math inline">\(\boldsymbol{\Phi} =
+\frac{1}{p}\mathbb{E}[\mathbf{X}\mathbf{X}^T]\)</span> is not a
+covariance matrix as the present concentration of measure on <span
+class="math inline">\(\mathbb{R}^p\)</span> does not impose that <span
+class="math inline">\(\mathbb{E}[\mathbf{X}] = 0\)</span>. Also, the
+deterministic equivalent <span
+class="math inline">\(\mathbf{Q}(z)\)</span> comes along with a
+convergence speed and an exponential tail, which are both more practical
+than a mere almost sure convergence of specific statistics.</p>
+<p>Concentration imposed on the joint matrix <span
+class="math inline">\(\mathbf{X}\)</span> rather than on each individual
+vector <span class="math inline">\(\mathbf{x}_i\)</span> may seem
+demanding. Indeed, since each coordinate projection is 1-Lipschitz,
+concentration of <span class="math inline">\(\mathbf{X}\)</span>
+automatically implies that of the <span
+class="math inline">\(\mathbf{x}_i\)</span>’s. That said, such a
+requirement is at least satisfied when <span
+class="math inline">\(\mathbf{x}_i = \varphi(\mathbf{y}_i)\)</span>,
+where <span class="math inline">\(\varphi : \mathbb{R}^{p&#39;} \to
+\mathbb{R}^p\)</span> is a 1-Lipschitz function and <span
+class="math inline">\(\mathbf{y}_i\)</span> is either distributed as
+<span class="math inline">\(\mathcal{N}(0, \mathbf{I}_{p&#39;})\)</span>
+or uniformly on the sphere of radius <span
+class="math inline">\(\sqrt{p&#39;}\)</span> in <span
+class="math inline">\(\mathbb{R}^{p&#39;}\)</span>. Therefore, the
+concentration condition on the data matrix <span
+class="math inline">\(\mathbf{X}\)</span> is not overly restrictive in
+typical practical settings.</p>
+<h3 class="unnumbered"
+id="proof-of-theorem-thmsample-covariance-concentrated-random-vectors">Proof
+of Theorem <a href="#thm:sample-covariance-concentrated-random-vectors"
+data-reference-type="ref"
+data-reference="thm:sample-covariance-concentrated-random-vectors">4</a></h3>
+<p>The proof proceeds by successively introducing two deterministic
+equivalents, as we outline below. We already know from Lemma <a
+href="#lem:concentration-resolvent" data-reference-type="ref"
+data-reference="lem:concentration-resolvent">5</a> that <span
+class="math inline">\(\mathbf{Q}(z) \in \mathbb{E}\mathbf{Q}(z) \pm
+Ce^{-c(\sqrt{n} \cdot)^q}\)</span> for some <span
+class="math inline">\(C, c &gt; 0\)</span> and it only remains to show
+that <span class="math inline">\(\|\mathbb{E}\mathbf{Q}(z) -
+\bar{\mathbf{Q}}(z)\|\)</span> is small.</p>
+<p>To this end, we introduce the first deterministic equivalent <span
+class="math display">\[\bar{\bar{\mathbf{Q}}}(z) =
+\left(\frac{\boldsymbol{\Phi}}{1 + \delta&#39;(z)} -
+z\mathbf{I}_p\right)^{-1}\]</span> where <span
+class="math inline">\(\delta&#39;(z) =
+\frac{1}{n}\mathbb{E}[\mathbf{x}^T\mathbf{Q}_-(z)\mathbf{x}] =
+\frac{1}{n}\text{tr}(\boldsymbol{\Phi}\mathbb{E}\mathbf{Q}_-)\)</span>
+for <span class="math inline">\(\mathbf{Q}_- \in \mathbb{R}^{p \times
+p}\)</span> the resolvent of <span
+class="math inline">\(\frac{1}{n}\mathbf{X}\mathbf{X}^T -
+\frac{1}{n}\mathbf{x}\mathbf{x}^T\)</span> and <span
+class="math inline">\(\mathbf{x}\)</span> any column of <span
+class="math inline">\(\mathbf{X}\)</span>. Applying the same ideas as in
+the proof of Theorem <a href="#thm:marcenko-pastur"
+data-reference-type="ref" data-reference="thm:marcenko-pastur">2</a>, we
+obtain (we discard the argument <span class="math inline">\(z\)</span>’s
+for readability) <span class="math display">\[\begin{aligned}
+\mathbb{E}\mathbf{Q} - \bar{\bar{\mathbf{Q}}} &amp;=
+\mathbb{E}\left[\mathbf{Q}\left(\frac{\boldsymbol{\Phi}}{1 +
+\delta&#39;} -
+\frac{1}{n}\mathbf{X}\mathbf{X}^T\right)\right]\bar{\bar{\mathbf{Q}}} \\
+&amp;= \frac{1}{n}\sum_{i=1}^n
+\mathbb{E}\left[\mathbf{Q}\left(\frac{\boldsymbol{\Phi}}{1 +
+\delta&#39;} -
+\mathbf{x}_i\mathbf{x}_i^T\right)\right]\bar{\bar{\mathbf{Q}}}=
+\mathbb{E}\left[\mathbf{Q}\left(\frac{\boldsymbol{\Phi}}{1 +
+\delta&#39;} -
+\mathbf{x}\mathbf{x}^T\right)\right]\bar{\bar{\mathbf{Q}}}
+\end{aligned}\]</span> which, along with <span
+class="math inline">\(\mathbf{Q} = \mathbf{Q}_- -
+\frac{1}{n}\frac{\mathbf{Q}_-\mathbf{x}\mathbf{x}^T\mathbf{Q}_-}{1 +
+\frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x}}\)</span> and <span
+class="math inline">\(\mathbf{Q}\mathbf{x} =
+\frac{\mathbf{Q}_-\mathbf{x}}{1 +
+\frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x}}\)</span> from Lemma <a
+href="#lem:sherman-morrison" data-reference-type="ref"
+data-reference="lem:sherman-morrison">1</a>, gives <span
+class="math inline">\(\mathbb{E}\mathbf{Q} - \bar{\bar{\mathbf{Q}}} =
+\mathbb{E}[\mathbf{E}_1] - \mathbb{E}[\mathbf{E}_2]\)</span>, where
+<span class="math display">\[\mathbf{E}_1 =
+\mathbf{Q}_-\left(\frac{\boldsymbol{\Phi}}{1 + \delta&#39;} -
+\frac{\mathbf{x}\mathbf{x}^T}{1 +
+\frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x}}\right)\bar{\bar{\mathbf{Q}}},
+\quad \mathbf{E}_2 = \frac{1}{n(1 +
+\delta&#39;)}\mathbf{Q}_-\mathbf{x}\mathbf{x}^T\mathbf{Q}\boldsymbol{\Phi}\bar{\bar{\mathbf{Q}}}.\]</span>
+To bound <span class="math inline">\(\|\mathbb{E}\mathbf{Q} -
+\bar{\bar{\mathbf{Q}}}\|\)</span> it suffices to bound <span
+class="math inline">\(|\mathbf{a}^T(\mathbb{E}\mathbf{Q} -
+\bar{\bar{\mathbf{Q}}})\mathbf{a}|\)</span> for any unit norm <span
+class="math inline">\(\mathbf{a}\)</span>. Applying Cauchy-Schwarz
+inequality twice we have <span class="math display">\[\begin{aligned}
+|\mathbf{a}^T\mathbb{E}[\mathbf{E}_1]\mathbf{a}| &amp;=
+\left|\mathbb{E}\left[\mathbf{a}^T\mathbf{Q}_-\mathbf{x}\mathbf{x}^T\bar{\bar{\mathbf{Q}}}\mathbf{a}
+\cdot \frac{\frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x} -
+\delta&#39;}{(1 + \delta&#39;)\left(1 +
+\frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x}\right)}\right]\right|\\
+&amp;\leq \mathbb{E}\left[|\mathbf{a}^T\mathbf{Q}_-\mathbf{x}| \cdot
+|\mathbf{x}^T\bar{\bar{\mathbf{Q}}}\mathbf{a}| \cdot
+\left|\frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x} -
+\delta&#39;\right|\right]\\
+&amp;\leq \sqrt{\mathbb{E}\left[|\mathbf{a}^T\mathbf{Q}_-\mathbf{x}|^2
+\cdot \left|\frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x} -
+\delta&#39;\right|\right] \cdot
+\mathbb{E}\left[|\mathbf{x}^T\bar{\bar{\mathbf{Q}}}\mathbf{a}|^2 \cdot
+\left|\frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x} -
+\delta&#39;\right|\right]}\\
+&amp;= O(n^{-\frac{1}{2}})
+\end{aligned}\]</span> where we used here: (i) <span
+class="math inline">\(\mathbf{a}^T\bar{\bar{\mathbf{Q}}}\mathbf{x}
+\propto Ce^{-(\cdot)^q}\)</span> and <span
+class="math inline">\(\mathbf{a}^T\mathbf{Q}_-\mathbf{x} \propto
+Ce^{-c(\cdot)^q}\)</span> (from which <span
+class="math inline">\(\mathbb{E}[|\mathbf{a}^T\bar{\bar{\mathbf{Q}}}\mathbf{x}|^k]
+= O(1)\)</span> and <span
+class="math inline">\(\mathbb{E}[|\mathbf{a}^T\mathbf{Q}_-\mathbf{x}|^k]
+= O(1)\)</span>) and (ii) <span
+class="math inline">\(\frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x} \in
+\delta&#39; \pm Ce^{-c(n \cdot)^{q/2}} + Ce^{-c(\sqrt{n}
+\cdot)^q}\)</span> (from which <span
+class="math inline">\(\mathbb{E}[|\frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x}
+- \delta&#39;|^k] = O(n^{-\frac{k}{2}})\)</span>). The concentration
+results (i) and (ii) themselves unfold from the previous generic results
+on concentration of vectors and bilinear forms. Similarly, <span
+class="math display">\[|\mathbf{a}^T\mathbb{E}[\mathbf{E}_2]\mathbf{a}|
+\leq \frac{1}{n}\sqrt{\mathbb{E}[|\mathbf{a}^T\mathbf{Q}_-\mathbf{x}|^2]
+\cdot
+\mathbb{E}[|\mathbf{x}^T\mathbf{Q}_-\boldsymbol{\Phi}\bar{\bar{\mathbf{Q}}}\mathbf{a}|^2]}
+= O(n^{-1}).\]</span> We thus find that <span
+class="math inline">\(\|\mathbb{E}\mathbf{Q} - \bar{\bar{\mathbf{Q}}}\|
+= O(n^{-\frac{1}{2}})\)</span>. Integrated into <span
+class="math inline">\(\mathbf{Q}(z) \in \mathbb{E}\mathbf{Q}(z) \pm
+Ce^{-c(\sqrt{n} \cdot)^q}\)</span>, this gives <span
+class="math inline">\(\mathbf{Q}(z) \in \bar{\bar{\mathbf{Q}}} \pm
+Ce^{-c(\sqrt{n} \cdot)^q}\)</span>.</p>
+<p>It thus remains to show similarly that <span
+class="math inline">\(\|\bar{\mathbf{Q}} -
+\bar{\bar{\mathbf{Q}}}\|\)</span> is small. Note that <span
+class="math display">\[\|\bar{\mathbf{Q}} - \bar{\bar{\mathbf{Q}}}\| =
+\frac{|\delta&#39; - \delta|}{(1 + \delta)(1 + \delta&#39;)}
+\|\bar{\mathbf{Q}}\boldsymbol{\Phi}\bar{\bar{\mathbf{Q}}}\| \leq
+\frac{|\delta - \delta&#39;|}{|z|}\]</span> and it thus suffices to
+control <span class="math inline">\(\delta - \delta&#39;\)</span>,
+which, by the implicit form of <span
+class="math inline">\(\delta\)</span>, satisfies <span
+class="math display">\[\begin{aligned}
+|\delta - \delta&#39;| &amp;=
+\frac{1}{n}\left|\mathop{\mathrm{tr}}\boldsymbol{\Phi}(\bar{\mathbf{Q}}
+- \bar{\bar{\mathbf{Q}}} + \bar{\bar{\mathbf{Q}}} - \mathbb{E}\mathbf{Q}
++ \mathbb{E}[\mathbf{Q} - \mathbf{Q}_-])\right|\\
+&amp;\leq
+\frac{1}{n}\left|\mathop{\mathrm{tr}}\boldsymbol{\Phi}(\bar{\mathbf{Q}}
+- \bar{\bar{\mathbf{Q}}})\right| +
+\frac{1}{n}\left|\mathop{\mathrm{tr}}\boldsymbol{\Phi}\|\bar{\bar{\mathbf{Q}}}
+- \mathbb{E}\mathbf{Q}\|\right| +
+\frac{1}{n}\left|\mathop{\mathrm{tr}}\boldsymbol{\Phi}\|\mathbb{E}[\mathbf{Q}
+- \mathbf{Q}_-]\|\right|\\
+&amp;\leq \sqrt{\frac{1}{n(1 +
+\delta)^2}\mathop{\mathrm{tr}}\boldsymbol{\Phi}^2\bar{\mathbf{Q}}^2}
+\cdot \sqrt{\frac{1}{n(1 +
+\delta&#39;)^2}\mathop{\mathrm{tr}}\boldsymbol{\Phi}^2\bar{\bar{\mathbf{Q}}}^2}
+\cdot |\delta - \delta&#39;| + O(n^{-\frac{1}{2}})
+\end{aligned}\]</span> where we used <span
+class="math inline">\(\mathop{\mathrm{tr}}\mathbf{A}\mathbf{B} \leq
+\|\mathbf{B}\| \cdot \text{tr}\mathbf{A}\)</span> for symmetric and
+nonnegative definite <span class="math inline">\(\mathbf{A} \in
+\mathbb{R}^{p \times p}\)</span>, and <span
+class="math inline">\(\|\mathbb{E}[\mathbf{Q} - \mathbf{Q}_-]\| =
+O(n^{-1/2})\)</span>, which unfolds from <span
+class="math display">\[\|\mathbb{E}[\mathbf{Q} - \mathbf{Q}_-]\| =
+\frac{1}{n}\left\|\mathbb{E}\frac{\mathbf{Q}_-\mathbf{x}\mathbf{x}^T\mathbf{Q}_-}{1
++ \frac{1}{n}\mathbf{x}^T\mathbf{Q}_-\mathbf{x}}\right\| =
+\frac{1}{n}\left\|\frac{\mathbb{E}[\mathbf{Q}_-\boldsymbol{\Phi}\mathbf{Q}_-]}{1
++ \delta&#39;}\right\| + O(n^{-\frac{1}{2}}).\]</span> The coefficient
+of <span class="math inline">\(|\delta - \delta&#39;|\)</span> on the
+right hand side is strictly less than 1 for all large <span
+class="math inline">\(n\)</span>, and thus <span
+class="math inline">\(|\delta - \delta&#39;| =
+O(n^{-\frac{1}{2}})\)</span>, which concludes the proof.</p>
+<div class="flushright">
+<p><span class="math inline">\(\blacksquare\)</span></p>
+</div>
+<h2>References</h2>
+<ol id="refs">
+  <li id="ref-couillet2022random">
+    Couillet, Romain, and Zhenyu Liao. 2022. <em>Random Matrix Methods for Machine Learning</em>. Cambridge University Press.
+  </li>
+  <li id="ref-elkaroui2009">
+    El Karoui, Noureddine. 2009. “Concentration of Measure and Spectra of Random Matrices: Applications to Correlation Matrices, Elliptical Distributions and Beyond.” <em>The Annals of Applied Probability</em> 19 (6): 2362–2405.
+  </li>
+  <li id="ref-Marcenko1967">
+    Marčenko, V. A., and Leonid Pastur. 1967. “Distribution of Eigenvalues for Some Sets of Random Matrices.” <em>Math USSR Sb</em> 1 (January): 457–83.
+  </li>
+  <li id="ref-pajor2009">
+    Pajor, Alain, and Leonid Pastur. 2009. “Spectral Analysis of Large Dimensional Random Matrices and Related Topics.” <em>arXiv Preprint arXiv:0904.3961</em>.
+  </li>
+</ol>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const refs = Array.from(document.querySelectorAll('#refs li'));
+  document.querySelectorAll('.citation').forEach(citation => {
+    const citeId = citation.getAttribute('data-cites');
+    if (!citeId) return;
+    const refElem = document.getElementById('ref-' + citeId);
+    if (!refElem) return;
+    const index = refs.indexOf(refElem) + 1;
+    if (index === 0) return;
+    const a = document.createElement('a');
+    a.href = '#ref-' + citeId;
+    a.className = 'citation';
+    a.textContent = `[${index}]`;
+    citation.replaceWith(a);
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,334 @@
+---
+title: "Dirichlet's Theorem"
+date: 2025-02-26
+---
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Dirichlet’s theorem</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="style.css" />
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<h2 id="fourier-analysis-on-finite-abelian-groups">1. Fourier Analysis
+on Finite Abelian Groups</h2>
+<p>In Fourier analysis on <span
+class="math inline">\(\mathbb{C}\)</span>, complex-valued functions can
+be approximated as sums of exponentials. A similar approach applies to
+finite abelian groups. Let <span class="math inline">\(V\)</span> be the
+vector space of all complex-valued functions defined on a finite abelian
+group <span class="math inline">\(G\)</span>. When <span
+class="math inline">\(G = \mathbb{Z}_N =
+\mathbb{Z}/N\mathbb{Z}\)</span>, the set <span class="math inline">\(\\{
+f_n \mid f_n(k) = w^{nk}, \, n \in \mathbb{Z}_N \\}\)</span> forms an
+orthonormal basis of <span class="math inline">\(V\)</span>, where <span
+class="math inline">\(w = e^{2\pi i / N}\)</span>. Moreover, this basis
+is isomorphic to <span class="math inline">\(\mathbb{Z}_N\)</span>, as
+the mapping between <span class="math inline">\(n\)</span> and <span
+class="math inline">\(f_n\)</span> defines an isomorphism.</p>
+<p>To extend this framework to general finite abelian groups, we first
+construct an orthonormal basis of <span
+class="math inline">\(V\)</span>. A character is defined as a
+homomorphism from <span class="math inline">\(V\)</span> to <span
+class="math inline">\(\mathbb{C}^*\)</span>. For <span
+class="math inline">\(\mathbb{Z}_N\)</span>, the characters are
+precisely the functions <span class="math inline">\(f_n\)</span>
+described earlier. These characters form a group under function
+composition, known as the dual group of <span
+class="math inline">\(G\)</span>, denoted by <span
+class="math inline">\(\hat{G}\)</span>. A straightforward verification
+shows that <span class="math inline">\(\hat{G}\)</span> is an
+orthonormal subset of <span class="math inline">\(V\)</span>.</p>
+<p>Since any finite abelian group can be expressed as a direct product
+of cyclic groups <span class="math inline">\(\mathbb{Z}_N\)</span>, the
+dual group <span class="math inline">\(\hat{G}\)</span> can be similarly
+decomposed as a direct product of <span
+class="math inline">\(\widehat{\mathbb{Z}_N}\)</span>. Given that <span
+class="math inline">\(\widehat{\mathbb{Z}_N} \cong
+\mathbb{Z}_N\)</span>, we obtain <span class="math inline">\(\hat{G}
+\cong G\)</span>, which implies <span class="math inline">\(\lvert
+\hat{G} \rvert = \lvert G \rvert = \dim(V)\)</span>. Consequently, the
+group of characters <span class="math inline">\(\hat{G}\)</span> forms
+an orthonormal basis of <span class="math inline">\(V\)</span>.</p>
+<p>This guarantees that any function on <span
+class="math inline">\(G\)</span> can be expressed as</p>
+<p><span class="math display">\[
+f = \sum_{\chi \in \hat{G}} \hat{f}(\chi) \chi, \quad \hat{f}(\chi) =
+(f, \chi) = \frac{1}{\lvert G \rvert} \sum_{a \in G} f(a)
+\overline{\chi(a)}.
+\]</span></p>
+<h2 id="dirichlets-theorem">2. Dirichlet’s theorem</h2>
+<p>We now proceed to the proof of Dirichlet’s theorem, which states that
+there are infinitely many primes satisfying <span
+class="math inline">\(p\equiv a(\mathrm{mod}\ m)\)</span> when <span
+class="math inline">\(a\)</span> and <span
+class="math inline">\(m\)</span> are coprime. Let <span
+class="math inline">\(V = \mathbb{Z}_m^*\)</span> and extend characters
+on <span class="math inline">\(\mathbb{Z}_m^*\)</span> to <span
+class="math inline">\(\mathbb{Z}_m\)</span> by setting them to zero
+outside the original domain. Noting that</p>
+<p><span class="math display">\[
+\delta_a(n)=\sum_{\chi}\hat{\delta}_a(\chi)\chi(n)=\sum_{\chi}\chi(n)\cdot\frac{1}{\varphi(m)}\sum_{l\in\mathbb{Z}_m^*}\delta_a(l)\overline{\chi(l)}=\frac{1}{\varphi(m)}\sum_{\chi}{\chi(n)\overline{\chi(a)}},
+\]</span></p>
+<p>we obtain</p>
+<p><span class="math display">\[
+\sum_{p\equiv a(\mathrm{mod}\
+m)}\frac{1}{p^s}=\sum_{p}\frac{1}{p^s}\cdot\frac{1}{\varphi(m)}\sum_{\chi}{\chi(p)\overline{\chi(a)}}=\frac{1}{\varphi(m)}\sum_{\chi}{\overline{\chi(a)}\sum_{p}{\frac{\chi(p)}{p^s}}}
+\\
+= \frac{1}{\varphi(m)}{(\sum_{p}{\frac{\chi_0(p)}{p^s}}+\sum_{\chi\not
+={\chi_0}}{\overline{\chi(a)}}\sum_{p}{\frac{\chi(p)}{p^s}})},
+\]</span></p>
+<p>where <span class="math inline">\(\chi_0\)</span> is the principal
+character, taking the value 1 on all elements of <span
+class="math inline">\(\mathbb{Z}_m^*\)</span> and 0 elsewhere. Since
+these series converge uniformly for <span
+class="math inline">\(s&gt;1\)</span>, they are continuous in this
+region. Taking the limit as <span
+class="math inline">\(s\rightarrow1^+\)</span>, the first term on the
+right-hand side diverges to infinity. If we establish that</p>
+<p><span class="math display">\[
+\sum_{p}{\frac{\chi(p)}{p}} \text{ is finite for }\chi\not =\chi_0,
+\]</span></p>
+<p>then the right-hand side also diverges, implying</p>
+<p><span class="math display">\[
+\sum_{p\equiv a(\mathrm{mod}\ m)}\frac{1}{p}=\infty,
+\]</span></p>
+<p>which confirms the infinitude of primes satisfying <span
+class="math inline">\(p\equiv a(\mathrm{mod}\ m)\)</span>. Thus, it
+remains to prove this finiteness on the non-principal characters,
+leading to the definition of the Dirichlet L-function:</p>
+<p><span class="math display">\[
+L(s,\chi)=\sum_{n}{\frac{\chi(n)}{n^s}}.
+\]</span></p>
+<p>Observing that</p>
+<p><span class="math display">\[
+\lvert\sum_{n}{\frac{\chi(n)}{n^s}}-\prod_{p\le
+N}{\frac{1}{1-\frac{\chi(p)}{p^s}}}\rvert\le\sum_{n&gt;N}\lvert\frac{\chi(n)}{n^s}\rvert,
+\]</span></p>
+<p>taking the limit as <span
+class="math inline">\(N\rightarrow\infty\)</span>, we obtain</p>
+<p><span class="math display">\[
+L(s,\chi)=\prod_{p}{\frac{1}{1-\frac{\chi(p)}{p^s}}}.
+\]</span></p>
+<p>for <span class="math inline">\(\Re(s)&gt;1\)</span>, because <span
+class="math inline">\(L\)</span> absolutely converges on this range.
+Moreover, for sufficiently large <span class="math inline">\(p\)</span>,
+we can assume that <span
+class="math inline">\(1-\frac{\chi(p)}{p^s}\)</span> lies in <span
+class="math inline">\(\mathbb{C}\setminus(-\infty,0]\)</span>, the
+principal branch of complex logarithms, allowing us to write</p>
+<p><span class="math display">\[
+L(s,\chi)=\exp\Big({\sum_{p}{-\log\big(1-\frac{\chi(p)}{p^s}\big)}}\Big)=\exp\Big({\sum_{p}{\frac{\chi(p)}{p^s}+O(\frac{\chi(p^2)}{p^{2s}})}}\Big)=\exp\Big({\sum_{p}{\frac{\chi(p)}{p^s}+O(1)}}\Big).
+\]</span></p>
+<p>Thus, it’s enough to show that <span
+class="math inline">\(L(1,\chi)\)</span> is nonzero and finite for all
+<span class="math inline">\(\chi\not =\chi_0\)</span>. Before addressing
+this, we explore some useful properties of <span
+class="math inline">\(L(s,\chi)\)</span>, particularly for <span
+class="math inline">\(\Re(s)&gt;0\)</span>, in connection with Dirichlet
+series.</p>
+<h2 id="dirichlet-series">3. Dirichlet series</h2>
+<p>A Dirichlet series is defined as</p>
+<p><span class="math display">\[
+D(s)=\sum_{n}{\frac{a_n}{n^s}}.
+\]</span></p>
+<h3 id="theorem-1">Theorem 1 <!-- omit in toc --></h3>
+<p>If the series defining <span class="math inline">\(D(s)\)</span>
+converges for some <span class="math inline">\(s=s_0\)</span>, then it
+converges uniformly on each compact subset of <span
+class="math inline">\(\Re(s)&gt;\Re(s_0)\)</span>. Hence, <span
+class="math inline">\(D\)</span> is holomorphic on this half-plane.</p>
+<h3 id="proof">Proof <!-- omit in toc --></h3>
+<p>Assume, without loss of generality, that <span
+class="math inline">\(s_0=0\)</span>. Define <span
+class="math inline">\(S_n=a_1+\cdots+a_n\)</span>, and there exists a
+constant <span class="math inline">\(C\)</span> such that <span
+class="math inline">\(\lvert S_n \rvert\le C\)</span>. For <span
+class="math inline">\(\Re(s)&gt;0\)</span>, since <span
+class="math inline">\(\frac{S_n}{n^s}\rightarrow0\)</span> as <span
+class="math inline">\(n\rightarrow\infty\)</span>, applying Abel’s
+summation lemma gives</p>
+<p><span class="math display">\[
+\Big\lvert
+\sum_{n}{\frac{a_n}{n^s}}\Big\rvert=\Big\lvert\sum_{n}{S_n(\frac{1}{n^s}-\frac{1}{(n+1)^s})}\Big\rvert\le
+C\sum_{n}{\Big\lvert\frac{1}{n^s}-\frac{1}{(n+1)^s}\Big\rvert}.
+\]</span></p>
+<p>Furthermore,</p>
+<p><span class="math display">\[
+\Big\lvert\frac{1}{n^s}-\frac{1}{(n+1)^s}\Big\rvert\le\sup_{n\le x\le
+n+1}{\Big\lvert\frac{s}{x^{s+1}}\Big\rvert}\le\frac{\lvert
+s\rvert}{n^{\Re(s)+1}}.
+\]</span></p>
+<p>Thus,</p>
+<p><span class="math display">\[
+\lvert D(s)\rvert \le C\lvert s\rvert\sum_{n}\frac{1}{n^{\Re(s)+1}},
+\]</span></p>
+<p>which converges uniformly on any compact subset of <span
+class="math inline">\(\Re(s)&gt;0\)</span>, as they lie in some region
+<span class="math inline">\(\Re(s)&gt;\varepsilon&gt;0\)</span>.</p>
+<div style="text-align: right">
+<span class="math inline">\(\square\)</span>
+</div>
+<p>A similar application of Abel’s summation lemma shows that <span
+class="math inline">\(L(s,\chi)\)</span> converges for a positive real
+<span class="math inline">\(s\)</span> when <span
+class="math inline">\(\chi\not =\chi_0\)</span>, making it holomorphic
+on <span class="math inline">\(\Re(s)&gt;0\)</span>. Consequently, <span
+class="math inline">\(L(1,\chi)\)</span> is finite for <span
+class="math inline">\(\chi\not =\chi_0\)</span>.</p>
+<p>For <span class="math inline">\(\Re(s)&gt;1\)</span>, we also
+have</p>
+<p><span class="math display">\[
+L(s,\chi_0)=\prod_{p\nmid m}{\frac{1}{1-p^{-s}}}=\zeta(s)\prod_{p\mid
+m}{(1-p^{-s})}.
+\]</span></p>
+<p>Rewriting <span class="math inline">\(\zeta(s)\)</span>,</p>
+<p><span class="math display">\[
+\zeta(s)=\frac{1}{s-1}+\sum_{n}{\frac{1}{n^s}}-\int_{1}^{\infty}{\frac{1}{t^s}dt}=\frac{1}{s-1}+\sum_{n}{\Big(\frac{1}{n^s}-\int_{n}^{n+1}{\frac{1}{t^s}dt}\Big)}=\frac{1}{s-1}+\sum_{n}{\int_{n}^{n+1}{\Big(\frac{1}{n^s}-\frac{1}{t^s}\Big)dt}}.
+\]</span></p>
+<p>Using</p>
+<p><span class="math display">\[
+\Big\lvert\int_{n}^{n+1}{\Big(\frac{1}{n^s}-\frac{1}{t^s}\Big)dt}\Big\rvert\le\sup_{n\le
+x\le
+n+1}\Big\lvert\frac{1}{n^s}-\frac{1}{t^s}\Big\rvert=\Big\lvert\frac{1}{n^s}-\frac{1}{(n+1)^s}\Big\rvert\le\frac{\lvert
+s\rvert}{n^{\Re(s)+1}},
+\]</span></p>
+<p>we conclude that the series of integrals converges on <span
+class="math inline">\(\Re(s)&gt;0\)</span>. Since each integral is
+holomorphic on <span class="math inline">\(\Re(s)&gt;0\)</span>, the
+series is also holomorphic on this region. Therefore, <span
+class="math inline">\(\zeta(s)\)</span> extends to a meromorphic
+function with a single simple pole at <span
+class="math inline">\(s=1\)</span> for <span
+class="math inline">\(\Re(s)&gt;0\)</span>, and <span
+class="math inline">\(L(s,\chi_0)\)</span> extends similarly. In other
+words, <span class="math inline">\(L(s,\chi_0)\)</span> is holomorphic
+on <span class="math inline">\(\Re(s)&gt;0\)</span>, except for a simple
+pole at <span class="math inline">\(s=1\)</span>.</p>
+<h3 id="theorem-2">Theorem 2 <!-- omit in toc --></h3>
+<p>Suppose that all <span class="math inline">\(a_n\)</span> are
+non-negative real numbers. If the series defining <span
+class="math inline">\(D(s)\)</span> converges on <span
+class="math inline">\(\Re(s)&gt;s_0\)</span> for some real <span
+class="math inline">\(s_0\)</span>, and <span
+class="math inline">\(D(s)\)</span> extends to a holomorphic function on
+<span class="math inline">\(\Re(s)&gt;s_0-\varepsilon\)</span> for some
+<span class="math inline">\(\varepsilon&gt;0\)</span>, then the series
+converges on <span
+class="math inline">\(\Re(s)&gt;s_0-\varepsilon\)</span>.</p>
+<h3 id="proof-1">Proof <!-- omit in toc --></h3>
+<p>Without loss of generality, assume <span
+class="math inline">\(s_0=0\)</span>. By Theorem 1, it suffices to show
+that the series converges for all real <span
+class="math inline">\(s&gt;-\varepsilon\)</span>. Since <span
+class="math inline">\(D(s)\)</span> is holomorphic on <span
+class="math inline">\(\Re(s)&gt;-\varepsilon\)</span>, we can write
+<span class="math inline">\(D\)</span> as</p>
+<p><span class="math display">\[
+D(s)=\sum_{m}{\frac{D^{(m)}(1)}{m!}(s-1)^m},
+\]</span></p>
+<p>with the <span class="math inline">\(m\)</span>-th derivative</p>
+<p><span class="math display">\[
+D^{(m)}(s)=\sum_{n}{\frac{a_n(-\log{n})^m}{n^s}}.
+\]</span></p>
+<p>Since <span class="math inline">\(a_n\ge 0\)</span>, each <span
+class="math inline">\((-1)^mD^{(m)}(1)\)</span> is a convergent series
+with positive terms. Thus, we can rewrite <span
+class="math inline">\(D\)</span> as</p>
+<p><span class="math display">\[
+D(s)=\sum_{n}{\frac{a_n}{n}\sum_{m}{\frac{((1-s)\log{n})^m}{m!}}}=\sum_{n}{\frac{a_n}{n}e^{(1-s)\log{n}}}=\sum_{n}{\frac{a_n}{n^s}},
+\]</span></p>
+<p>implying that this series also converges for <span
+class="math inline">\(s&gt;-\varepsilon\)</span>.</p>
+<div style="text-align: right">
+<span class="math inline">\(\square\)</span>
+</div>
+<p>This theorem is crucial for the final step of the proof in the next
+section.</p>
+<h2 id="showing-lschinot-0-for-chinot-chi_0">4. Showing <span
+class="math inline">\(L(s,\chi)\not = 0\)</span> for <span
+class="math inline">\(\chi\not =\chi_0\)</span></h2>
+<p>Define <span class="math display">\[
+f(s)=\prod_{\chi}{L(s,\chi)}.
+\]</span></p>
+<p>If some <span class="math inline">\(\chi \neq \chi_0\)</span>
+satisfies <span class="math inline">\(L(s,\chi) = 0\)</span>, then from
+the previous results, <span class="math inline">\(f(s)\)</span> extends
+holomorphically to <span class="math inline">\(\Re(s) &gt; 0\)</span>.
+For <span class="math inline">\(\Re(s) &gt; 1\)</span>,</p>
+<p><span class="math display">\[
+f(s)=\prod_{\chi}\prod_{p}\Big(\frac{1}{1-\frac{\chi(p)}{p^s}}\Big)=\prod_{p\nmid
+m}\prod_{\chi}\Big(\frac{1}{1-\frac{\chi(p)}{p^s}}\Big).
+\]</span></p>
+<p>For <span class="math inline">\(p\nmid m\)</span>, since <span
+class="math inline">\(\chi(p)^{\text{ord}(p)}=1\)</span>, we obtain that
+<span class="math inline">\(\chi(p)\)</span> can only take the value of
+<span class="math inline">\(\text{ord(p)}\)</span>-th root of unity.
+These roots form a subgroup <span
+class="math inline">\(H\le\mathbb{Z}_m^*\)</span> of order <span
+class="math inline">\(\lvert H\rvert=\text{ord}(p)\)</span>. Each
+characters on <span class="math inline">\(H\)</span> extend to a
+character on <span class="math inline">\(\mathbb{Z}_m^*\)</span> in
+exactly <span class="math inline">\(\lvert
+\widehat{\mathbb{Z}_m^*/H}\rvert=\lvert
+\mathbb{Z}_m^*/H\rvert=\frac{\varphi(m)}{\text{ord}(p)}\)</span> ways,
+implying that each root of unity appears with multiplicity <span
+class="math inline">\(\frac{\varphi(m)}{\text{ord}(p)}\)</span> in <span
+class="math inline">\(\chi(p)\)</span>. Consequently, for <span
+class="math inline">\(p \nmid m\)</span>,</p>
+<p><span class="math display">\[
+\prod_{\chi}\Big(1-\frac{\chi(p)}{p^s}\Big)=\Big(\prod_{\omega\in
+H}(1-\frac{\omega}{p^{s}})\Big)^{\frac{\varphi(m)}{\text{ord}(p)}}=\Big(1-\frac{1}{p^{s\cdot\text{ord}(p)}}\Big)^{\frac{\varphi(m)}{\text{ord}(p)}}.
+\]</span></p>
+<p>Thus, for <span class="math inline">\(\Re(s)&gt;1\)</span>,</p>
+<p><span class="math display">\[
+f(s)=\prod_{p\nmid
+m}{\Big(\frac{1}{1-\frac{1}{p^{s\cdot\text{ord}(p)}}}\Big)^{\frac{\varphi(m)}{\text{ord}(p)}}}.
+\]</span></p>
+<p>The right-hand side is a Dirichlet series with nonnegative real
+coefficients <span class="math inline">\(a_n\)</span> and converges on
+<span class="math inline">\(\Re(s) &gt; 1\)</span> since <span
+class="math inline">\(f(s)\)</span> is finite on this region. As <span
+class="math inline">\(f(s)\)</span> is holomorphic on <span
+class="math inline">\(\Re(s) &gt; 0\)</span>, Theorem 2 implies that
+this series also converges on <span class="math inline">\(\Re(s) &gt;
+0\)</span>. However, for real <span
+class="math inline">\(s\)</span>,</p>
+<p><span class="math display">\[
+\prod_{p\nmid
+m}\Big(\frac{1}{1-\frac{1}{p^{s\cdot\text{ord}(p)}}}\Big)^{\frac{\varphi(m)}{\text{ord}(p)}}\ge
+\prod_{p\nmid
+m}{\Big(1+\frac{1}{p^{s\cdot\varphi(m)}}+\frac{1}{p^{2s\cdot\varphi(m)}}+\cdots\Big)}=\sum_{(n,m)=1}{\frac{1}{n^{s\cdot\varphi(m)}}}.
+\]</span></p>
+<p>The series on the right diverges for <span class="math inline">\(s =
+\frac{1}{\varphi(m)} &gt; 0\)</span>, contradicting the assumption that
+<span class="math inline">\(f(s)\)</span> converges on <span
+class="math inline">\(\Re(s)&gt;0\)</span>. Thus, no character <span
+class="math inline">\(\chi \neq \chi_0\)</span> satisfies <span
+class="math inline">\(L(s, \chi) = 0\)</span>, completing the proof of
+Dirichlet’s theorem.</p>
+<hr />
+</body>
+</html>
