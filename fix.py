@@ -3,18 +3,45 @@ from bs4 import BeautifulSoup
 
 filename = sys.argv[1]
 
-style_append = '''
-body {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 1rem;
-  font-family: sans-serif;
-  line-height: 1.6;
+# 완전히 대체할 CSS 내용
+new_style_content = '''
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+    font-size: inherit;
+    width: 0.8em;
+    margin: 0 0.8em 0.2em -1.6em;
+    vertical-align: middle;
 }
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+    clear: both;
+    margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+    margin-left:2em;
+    text-indent:-2em;
+}
+div.csl-left-margin {
+    min-width:2em;
+    float:left;
+}
+div.csl-right-inline {
+    margin-left:2em;
+    padding-left:1em;
+}
+div.csl-indent {
+    margin-left: 2em;
+}  
 #refs {
-    counter-reset: ref-counter;
-    list-style: none;
-    padding-left: 0;
+counter-reset: ref-counter;
+list-style: none;
+padding-left: 0;
 }
 #refs li {
     counter-increment: ref-counter;
@@ -39,7 +66,7 @@ soup = BeautifulSoup(html, 'html.parser')
 # 1. <style> 블럭 맨 끝에 CSS 추가
 style_tag = soup.find('style')
 if style_tag:
-    style_tag.append('\n' + style_append)
+    style_tag.string = new_style_content
 
 # 2. <div id="refs"...> → <h2> + <ol> 구조로 변경 (같은 위치)
 refs_div = soup.find("div", id="refs", class_="references")
